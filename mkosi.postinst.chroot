@@ -1,0 +1,30 @@
+#!/bin/sh
+set -eux
+
+# Ensure binary exists
+if [ ! -x /usr/local/bin/eQ ]; then
+    echo "eQ binary missing"
+    exit 1
+fi
+
+# Create kiosk user
+useradd -m -u 1000 eqos
+
+# Enable required services
+systemctl enable kiosk.service
+systemctl set-default graphical.target
+
+# Disable networking
+systemctl mask systemd-networkd.service || true
+systemctl mask systemd-resolved.service || true
+systemctl mask NetworkManager.service || true
+systemctl mask wpa_supplicant.service || true
+
+# Journald to TTY1
+mkdir -p /etc/systemd/journald.conf.d
+cat > /etc/systemd/journald.conf.d/kiosk.conf << 'EOF'
+[Journal]
+ForwardToConsole=yes
+MaxLevelConsole=debug
+TTYPath=/dev/tty1
+EOF

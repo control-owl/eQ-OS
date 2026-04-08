@@ -1,0 +1,15 @@
+[Unit]
+Description=eQ Wallet Kiosk
+After=systemd-user-sessions.service
+
+[Service]
+User=eqos
+TTYPath=/dev/tty1
+StandardInput=tty
+StandardOutput=journal
+StandardError=journal
+ExecStart=/usr/local/bin/eQ
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
