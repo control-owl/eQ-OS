@@ -1,4 +1,5 @@
 /ISO
 /qemu
+/log
 mkosi.cache
 mkosi.tools

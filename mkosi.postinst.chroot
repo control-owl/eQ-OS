@@ -1,14 +1,13 @@
 #!/bin/sh
 set -eux
 
-#################################################
+echo "#################################################"
 echo "[01] Locale fix..."
 mkdir -p /etc/default
 printf 'LANG=C.UTF-8\n' > /etc/default/locale
-#################################################
 
 
-#################################################
+echo "#################################################"
 echo "[02] Creating eqos user..."
 if ! id eqos >/dev/null 2>&1; then
     useradd \
@@ -18,11 +17,21 @@ if ! id eqos >/dev/null 2>&1; then
         --uid 1000 \
         --user-group eqos
 fi
-#################################################
 
 
-#################################################
-echo "[03] Installing Rust..."
+
+echo "#################################################"
+echo "[03] Setting up user environment..."
+cat > /home/eqos/.profile << 'EOF'
+if [ -f "$HOME/.cargo/env" ]; then
+    . "$HOME/.cargo/env"
+fi
+EOF
+cp /home/eqos/.profile /home/eqos/.bashrc || true
+
+
+echo "#################################################"
+echo "[04] Installing Rust..."
 rm -rf /home/eqos/.rustup /home/eqos/.cargo
 cat > /tmp/rustup-install.sh << 'EOF'
 #!/bin/sh
@@ -51,11 +60,10 @@ env -i HOME=/home/eqos \
        USER=eqos \
        PATH=/usr/bin:/bin:/usr/sbin \
        /tmp/rustup-install.sh
-#################################################
 
 
-#################################################
-echo "[04] Cloning and building eQ..."
+echo "#################################################"
+echo "[05] Cloning and building eQ..."
 cat > /tmp/build-eq.sh << 'EOF'
 #!/bin/sh
 set -eux
@@ -75,22 +83,20 @@ env -i HOME=/home/eqos \
        RUSTUP_HOME=/home/eqos/.rustup \
        PATH=/usr/bin:/bin:/usr/sbin \
        /tmp/build-eq.sh
-#################################################
 
 
-#################################################
-echo "[05] Installing binary..."
+echo "#################################################"
+echo "[06] Installing binary..."
 install -m 0755 /home/eqos/eQ/target/release/eQ /usr/local/bin/eQ
 
 if [ ! -x /usr/local/bin/eQ ]; then
     echo "ERROR: eQ binary missing!"
     exit 1
 fi
-#################################################
 
 
-#################################################
-echo "[06] Final configuration..."
+echo "#################################################"
+echo "[07] Final configuration..."
 cp /home/eqos/.profile /home/eqos/.bashrc 2>/dev/null || true
 
 systemctl enable kiosk.service || true
@@ -101,7 +107,7 @@ systemctl mask systemd-resolved.service || true
 systemctl mask NetworkManager.service || true
 systemctl mask wpa_supplicant.service || true
 
-chown eqos:eqos /home/eqos -R
+usermod -aG video,input,render eqos
 
-echo "===== mkosi postinst complete ====="
-#################################################
+echo "#################################################"
+echo "DONE: mkosi postinst complete"
