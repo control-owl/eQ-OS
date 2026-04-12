@@ -16,9 +16,7 @@ Environment=LIBGL_ALWAYS_SOFTWARE=1
 
 SupplementaryGroups=video input
 
-# Start minimal X server + eQ directly (software rendering)
-ExecStart=/usr/bin/startx /usr/local/bin/eQ -- :0 vt1 -nocursor
-
+ExecStart=/usr/bin/startx /usr/local/bin/eQ -- :0 -allowMouseOpenFail
 Restart=always
 RestartSec=3
 
