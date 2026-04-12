@@ -1,30 +1,107 @@
 #!/bin/sh
 set -eux
 
-# Ensure binary exists
+#################################################
+echo "[01] Locale fix..."
+mkdir -p /etc/default
+printf 'LANG=C.UTF-8\n' > /etc/default/locale
+#################################################
+
+
+#################################################
+echo "[02] Creating eqos user..."
+if ! id eqos >/dev/null 2>&1; then
+    useradd \
+        --create-home \
+        --home-dir /home/eqos \
+        --shell /bin/bash \
+        --uid 1000 \
+        --user-group eqos
+fi
+#################################################
+
+
+#################################################
+echo "[03] Installing Rust..."
+rm -rf /home/eqos/.rustup /home/eqos/.cargo
+cat > /tmp/rustup-install.sh << 'EOF'
+#!/bin/sh
+set -eux
+export HOME=/home/eqos
+export CARGO_HOME=/home/eqos/.cargo
+export RUSTUP_HOME=/home/eqos/.rustup
+export USER=eqos
+export PATH=/usr/bin:/bin
+cd "$HOME"
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o rustup.sh
+sh rustup.sh -y \
+    --profile minimal \
+    --default-toolchain stable \
+    --no-modify-path
+"$HOME/.cargo/bin/rustup" default stable
+echo "Rust installed successfully:"
+"$HOME/.cargo/bin/rustc" --version
+"$HOME/.cargo/bin/cargo" --version
+EOF
+
+chmod +x /tmp/rustup-install.sh
+env -i HOME=/home/eqos \
+       CARGO_HOME=/home/eqos/.cargo \
+       RUSTUP_HOME=/home/eqos/.rustup \
+       USER=eqos \
+       PATH=/usr/bin:/bin:/usr/sbin \
+       /tmp/rustup-install.sh
+#################################################
+
+
+#################################################
+echo "[04] Cloning and building eQ..."
+cat > /tmp/build-eq.sh << 'EOF'
+#!/bin/sh
+set -eux
+export HOME=/home/eqos
+export CARGO_HOME=/home/eqos/.cargo
+export RUSTUP_HOME=/home/eqos/.rustup
+export PATH=/home/eqos/.cargo/bin:/usr/bin:/bin
+cd "$HOME"
+git clone -b stable --single-branch https://github.com/control-owl/eQ.git
+cd eQ
+cargo build --release
+EOF
+
+chmod +x /tmp/build-eq.sh
+env -i HOME=/home/eqos \
+       CARGO_HOME=/home/eqos/.cargo \
+       RUSTUP_HOME=/home/eqos/.rustup \
+       PATH=/usr/bin:/bin:/usr/sbin \
+       /tmp/build-eq.sh
+#################################################
+
+
+#################################################
+echo "[05] Installing binary..."
+install -m 0755 /home/eqos/eQ/target/release/eQ /usr/local/bin/eQ
+
 if [ ! -x /usr/local/bin/eQ ]; then
-    echo "eQ binary missing"
+    echo "ERROR: eQ binary missing!"
     exit 1
 fi
+#################################################
 
-# Create kiosk user
-useradd -m -u 1000 eqos
 
-# Enable required services
-systemctl enable kiosk.service
-systemctl set-default graphical.target
+#################################################
+echo "[06] Final configuration..."
+cp /home/eqos/.profile /home/eqos/.bashrc 2>/dev/null || true
 
-# Disable networking
+systemctl enable kiosk.service || true
+systemctl set-default multi-user.target
+
 systemctl mask systemd-networkd.service || true
 systemctl mask systemd-resolved.service || true
 systemctl mask NetworkManager.service || true
 systemctl mask wpa_supplicant.service || true
 
-# Journald to TTY1
-mkdir -p /etc/systemd/journald.conf.d
-cat > /etc/systemd/journald.conf.d/kiosk.conf << 'EOF'
-[Journal]
-ForwardToConsole=yes
-MaxLevelConsole=debug
-TTYPath=/dev/tty1
-EOF
+chown eqos:eqos /home/eqos -R
+
+echo "===== mkosi postinst complete ====="
+#################################################

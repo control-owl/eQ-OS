@@ -6,7 +6,6 @@ IMAGE="eQ-OS.raw"
 OUTPUT_DIR="ISO"
 QEMU_DIR="qemu"
 
-
 mkosi clean
 
 rm -rf "$OUTPUT_DIR"
@@ -36,5 +35,5 @@ qemu-system-x86_64 \
     -drive file="$OUTPUT_DIR/$IMAGE",format=raw,if=virtio \
     -device virtio-gpu-pci \
     -display gtk,gl=on,show-cursor=on \
-    -serial mon:stdio
+    -serial mon:stdio \
     -vga std

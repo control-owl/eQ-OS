@@ -1,3 +1,4 @@
 /ISO
 /qemu
-mkosi.extra/usr/local/bin/eQ
+mkosi.cache
+mkosi.tools
