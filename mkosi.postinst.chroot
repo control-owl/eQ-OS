@@ -38,6 +38,10 @@ cat > /home/eqos/.profile << 'EOF'
 if [ -f "$HOME/.cargo/env" ]; then
     . "$HOME/.cargo/env"
 fi
+
+if [ -f "/usr/local/bin/eQ" ]; then
+    startx
+fi
 EOF
 
 cp /home/eqos/.profile /home/eqos/.bashrc || true
