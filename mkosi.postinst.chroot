@@ -1,14 +1,20 @@
 #!/bin/sh
 set -eux
 
-echo "#################################################"
-echo "[01] Locale fix..."
+
+# ≡≡≡≡≡≡≡≡≡  configure system locale  ≡≡≡≡≡≡≡≡≡
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+echo "Locale fix..."
 mkdir -p /etc/default
 printf 'LANG=C.UTF-8\n' > /etc/default/locale
 
 
-echo "#################################################"
-echo "[02] Creating eqos user..."
+# ≡≡≡≡≡≡≡≡≡  create eqos user  ≡≡≡≡≡≡≡≡≡
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+echo "Creating eqos user..."
+
 if ! id eqos >/dev/null 2>&1; then
     useradd \
         --create-home \
@@ -16,23 +22,46 @@ if ! id eqos >/dev/null 2>&1; then
         --shell /bin/bash \
         --uid 1000 \
         --user-group eqos
+
+    echo "eqos:eQ" | chpasswd
 fi
 
+usermod -aG video,input,render eqos
 
 
-echo "#################################################"
-echo "[03] Setting up user environment..."
+# ≡≡≡≡≡≡≡≡≡  setup user profile  ≡≡≡≡≡≡≡≡≡
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+echo "Setting up user environment..."
+
 cat > /home/eqos/.profile << 'EOF'
 if [ -f "$HOME/.cargo/env" ]; then
     . "$HOME/.cargo/env"
 fi
 EOF
+
 cp /home/eqos/.profile /home/eqos/.bashrc || true
 
+cat > /home/eqos/.xsession << 'EOF'
+/usr/local/bin/eQ
+EOF
 
-echo "#################################################"
-echo "[04] Installing Rust..."
+chmod 755 /home/eqos/.xsession
+chown eqos:eqos /home/eqos/.xsession
+
+
+touch /home/eqos/.Xauthority
+chmod 600 /home/eqos/.Xauthority
+chown eqos:eqos /home/eqos/.Xauthority
+
+
+# ≡≡≡≡≡≡≡≡≡  install rust toolchain  ≡≡≡≡≡≡≡≡≡
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+echo "Installing Rust..."
+
 rm -rf /home/eqos/.rustup /home/eqos/.cargo
+
 cat > /tmp/rustup-install.sh << 'EOF'
 #!/bin/sh
 set -eux
@@ -54,6 +83,7 @@ echo "Rust installed successfully:"
 EOF
 
 chmod +x /tmp/rustup-install.sh
+
 env -i HOME=/home/eqos \
        CARGO_HOME=/home/eqos/.cargo \
        RUSTUP_HOME=/home/eqos/.rustup \
@@ -62,8 +92,11 @@ env -i HOME=/home/eqos \
        /tmp/rustup-install.sh
 
 
-echo "#################################################"
-echo "[05] Cloning and building eQ..."
+# ≡≡≡≡≡≡≡≡≡  clone and build eQ  ≡≡≡≡≡≡≡≡≡
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+echo "Cloning and building eQ..."
+
 cat > /tmp/build-eq.sh << 'EOF'
 #!/bin/sh
 set -eux
@@ -78,6 +111,7 @@ cargo build --release
 EOF
 
 chmod +x /tmp/build-eq.sh
+
 env -i HOME=/home/eqos \
        CARGO_HOME=/home/eqos/.cargo \
        RUSTUP_HOME=/home/eqos/.rustup \
@@ -85,8 +119,11 @@ env -i HOME=/home/eqos \
        /tmp/build-eq.sh
 
 
-echo "#################################################"
-echo "[06] Installing binary..."
+# ≡≡≡≡≡≡≡≡≡  install eQ binary  ≡≡≡≡≡≡≡≡≡
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+echo "Installing eQ binary..."
+
 install -m 0755 /home/eqos/eQ/target/release/eQ /usr/local/bin/eQ
 
 if [ ! -x /usr/local/bin/eQ ]; then
@@ -95,8 +132,11 @@ if [ ! -x /usr/local/bin/eQ ]; then
 fi
 
 
-echo "#################################################"
-echo "[07] Final configuration..."
+# ≡≡≡≡≡≡≡≡≡  configure systemd services  ≡≡≡≡≡≡≡≡≡
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+echo "Final configuration..."
+
 cp /home/eqos/.profile /home/eqos/.bashrc 2>/dev/null || true
 
 systemctl enable kiosk.service || true
@@ -107,7 +147,15 @@ systemctl mask systemd-resolved.service || true
 systemctl mask NetworkManager.service || true
 systemctl mask wpa_supplicant.service || true
 
-usermod -aG video,input,render eqos
 
-echo "#################################################"
-echo "DONE: mkosi postinst complete"
+# ≡≡≡≡≡≡≡≡≡  finalize system  ≡≡≡≡≡≡≡≡≡
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+echo "Update initramfs..."
+update-initramfs -u
+
+plymouth-set-default-theme eqos
+
+systemctl enable plymouth-start.service
+
+echo "mkosi postinst finished"

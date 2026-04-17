@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=eqos
+Description=eQ-OS
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/eqos
+ScriptFile=/usr/share/plymouth/themes/eqos/eqos.script
