@@ -1,19 +1,22 @@
 #!/bin/sh
 set -eux
 
+# ≡≡≡≡≡≡≡≡≡ mkosi.postinst.chroot ≡≡≡≡≡≡≡≡≡
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+echo "Starting mkosi.postinst.chroot..."
 
-# ≡≡≡≡≡≡≡≡≡  configure system locale  ≡≡≡≡≡≡≡≡≡
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-echo "Locale fix..."
+# ≡≡≡≡≡≡≡ configure system locale ≡≡≡≡≡≡≡
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+echo "Configuring system locale..."
+
 mkdir -p /etc/default
 printf 'LANG=C.UTF-8\n' > /etc/default/locale
 
 
-# ≡≡≡≡≡≡≡≡≡  create eqos user  ≡≡≡≡≡≡≡≡≡
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-echo "Creating eqos user..."
+# ≡≡≡≡≡≡≡ setup user profile ≡≡≡≡≡≡≡
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+echo "Setting up user profile..."
 
 if ! id eqos >/dev/null 2>&1; then
     useradd \
@@ -22,23 +25,14 @@ if ! id eqos >/dev/null 2>&1; then
         --shell /bin/bash \
         --uid 1000 \
         --user-group eqos
-
-    echo "eqos:eQ" | chpasswd
 fi
 
 usermod -aG video,input,render eqos
-
-
-# ≡≡≡≡≡≡≡≡≡  setup user profile  ≡≡≡≡≡≡≡≡≡
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-echo "Setting up user environment..."
 
 cat > /home/eqos/.profile << 'EOF'
 if [ -f "$HOME/.cargo/env" ]; then
     . "$HOME/.cargo/env"
 fi
-
 if [ -f "/usr/local/bin/eQ" ]; then
     startx
 fi
@@ -47,119 +41,48 @@ EOF
 cp /home/eqos/.profile /home/eqos/.bashrc || true
 
 cat > /home/eqos/.xsession << 'EOF'
-/usr/local/bin/eQ
+exec /usr/bin/xterm -fullscreen -e /usr/local/bin/kiosk-menu.sh
 EOF
 
 chmod 755 /home/eqos/.xsession
 chown eqos:eqos /home/eqos/.xsession
-
 
 touch /home/eqos/.Xauthority
 chmod 600 /home/eqos/.Xauthority
 chown eqos:eqos /home/eqos/.Xauthority
 
 
-# ≡≡≡≡≡≡≡≡≡  install rust toolchain  ≡≡≡≡≡≡≡≡≡
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# ≡≡≡≡≡≡≡ configure systemd services ≡≡≡≡≡≡≡
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+echo "Configuring systemd services..."
 
-echo "Installing Rust..."
-
-rm -rf /home/eqos/.rustup /home/eqos/.cargo
-
-cat > /tmp/rustup-install.sh << 'EOF'
-#!/bin/sh
-set -eux
-export HOME=/home/eqos
-export CARGO_HOME=/home/eqos/.cargo
-export RUSTUP_HOME=/home/eqos/.rustup
-export USER=eqos
-export PATH=/usr/bin:/bin
-cd "$HOME"
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o rustup.sh
-sh rustup.sh -y \
-    --profile minimal \
-    --default-toolchain stable \
-    --no-modify-path
-"$HOME/.cargo/bin/rustup" default stable
-echo "Rust installed successfully:"
-"$HOME/.cargo/bin/rustc" --version
-"$HOME/.cargo/bin/cargo" --version
-EOF
-
-chmod +x /tmp/rustup-install.sh
-
-env -i HOME=/home/eqos \
-       CARGO_HOME=/home/eqos/.cargo \
-       RUSTUP_HOME=/home/eqos/.rustup \
-       USER=eqos \
-       PATH=/usr/bin:/bin:/usr/sbin \
-       /tmp/rustup-install.sh
-
-
-# ≡≡≡≡≡≡≡≡≡  clone and build eQ  ≡≡≡≡≡≡≡≡≡
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-echo "Cloning and building eQ..."
-
-cat > /tmp/build-eq.sh << 'EOF'
-#!/bin/sh
-set -eux
-export HOME=/home/eqos
-export CARGO_HOME=/home/eqos/.cargo
-export RUSTUP_HOME=/home/eqos/.rustup
-export PATH=/home/eqos/.cargo/bin:/usr/bin:/bin
-cd "$HOME"
-git clone -b stable --single-branch https://github.com/control-owl/eQ.git
-cd eQ
-cargo build --release
-EOF
-
-chmod +x /tmp/build-eq.sh
-
-env -i HOME=/home/eqos \
-       CARGO_HOME=/home/eqos/.cargo \
-       RUSTUP_HOME=/home/eqos/.rustup \
-       PATH=/usr/bin:/bin:/usr/sbin \
-       /tmp/build-eq.sh
-
-
-# ≡≡≡≡≡≡≡≡≡  install eQ binary  ≡≡≡≡≡≡≡≡≡
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-echo "Installing eQ binary..."
-
-install -m 0755 /home/eqos/eQ/target/release/eQ /usr/local/bin/eQ
-
-if [ ! -x /usr/local/bin/eQ ]; then
-    echo "ERROR: eQ binary missing!"
-    exit 1
-fi
-
-
-# ≡≡≡≡≡≡≡≡≡  configure systemd services  ≡≡≡≡≡≡≡≡≡
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-echo "Final configuration..."
-
-cp /home/eqos/.profile /home/eqos/.bashrc 2>/dev/null || true
-
-systemctl enable kiosk.service || true
 systemctl set-default multi-user.target
 
-systemctl mask systemd-networkd.service || true
-systemctl mask systemd-resolved.service || true
-systemctl mask NetworkManager.service || true
-systemctl mask wpa_supplicant.service || true
+systemctl mask systemd-networkd.service \
+                systemd-resolved.service \
+                NetworkManager.service \
+                wpa_supplicant.service || true
 
 
-# ≡≡≡≡≡≡≡≡≡  finalize system  ≡≡≡≡≡≡≡≡≡
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# ≡≡≡≡≡≡≡ Kiosk permission ≡≡≡≡≡≡≡
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+echo "Configuring Kiosk permissions..."
 
-echo "Update initramfs..."
+chmod 0755 /usr/local/bin/kiosk-menu.sh 
+chown root:root /usr/local/bin/kiosk-menu.sh
+chown root:root /etc/polkit-1/rules.d/50-kiosk-power.rules
+
+
+# ≡≡≡≡≡≡≡ Finalize system ≡≡≡≡≡≡≡
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+echo "Finalizing system..."
+
 update-initramfs -u
 
 plymouth-set-default-theme eqos
-
 systemctl enable plymouth-start.service
 
-echo "mkosi postinst finished"
+
+# ≡≡≡≡≡≡≡≡≡ mkosi.postinst.chroot done ≡≡≡≡≡≡≡≡≡
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+echo "mkosi.postinst.chroot finished"

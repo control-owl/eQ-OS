@@ -1,0 +1,77 @@
+#!/bin/sh
+set -eux
+
+# ≡≡≡≡≡≡≡≡≡ mkosi.build.chroot ≡≡≡≡≡≡≡≡≡
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+echo "Starting mkosi.build.chroot..."
+
+
+# ≡≡≡≡≡≡≡≡≡ Create eqos user ≡≡≡≡≡≡≡≡≡
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+echo "Creating eqos user..."
+
+if ! id eqos >/dev/null 2>&1; then
+    useradd \
+        --create-home \
+        --home-dir /home/eqos \
+        --shell /bin/bash \
+        --uid 1000 \
+        --user-group eqos
+fi
+
+
+# ≡≡≡≡≡≡≡≡≡ Prepare rust ≡≡≡≡≡≡≡≡≡
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+export HOME=/home/eqos
+export CARGO_HOME=/home/eqos/.cargo
+export RUSTUP_HOME=/home/eqos/.rustup
+export USER=eqos
+export PATH=/home/eqos/.cargo/bin:/usr/bin:/bin:/usr/sbin
+
+
+# ≡≡≡≡≡≡≡≡≡ Install rust ≡≡≡≡≡≡≡≡≡
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+echo "Installing Rust toolchain..."
+
+cd "$HOME"
+curl \
+    --proto '=https' \
+    --tlsv1.2 \
+    -sSf https://sh.rustup.rs \
+    -o /tmp/rustup.sh
+
+sh \
+    /tmp/rustup.sh -y \
+    --profile minimal \
+    --default-toolchain stable \
+    --no-modify-path
+
+rustup default stable
+
+
+# ≡≡≡≡≡≡≡≡≡ Install eQ ≡≡≡≡≡≡≡≡≡
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+echo "Cloning and building eQ..."
+
+cd "$HOME"
+git clone \
+    -b stable \
+    --single-branch \
+    https://github.com/control-owl/eQ.git
+
+cd eQ
+cargo build --release
+
+install -D -m 0755 target/release/eQ "$DESTDIR/usr/local/bin/eQ"
+
+if [ ! -x "$DESTDIR/usr/local/bin/eQ" ]; then
+    echo "ERROR: eQ binary installation failed!"
+    exit 1
+else
+    echo "eQ installed"
+fi
+
+
+# ≡≡≡≡≡≡≡≡≡ mkosi.build.chroot done ≡≡≡≡≡≡≡≡≡
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+echo "mkosi.build.chroot finished"

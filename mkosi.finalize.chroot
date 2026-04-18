@@ -1,0 +1,48 @@
+#!/bin/sh
+set -eux
+
+# ≡≡≡≡≡≡≡≡≡ mkosi.finalize.chroot ≡≡≡≡≡≡≡≡≡
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+echo "Starting mkosi.finalize.chroot..."
+
+
+# ≡≡≡≡≡≡≡≡≡ Remove Rust artifacts ≡≡≡≡≡≡≡≡≡
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+echo "Removing Rust / Cargo build artifacts..."
+rm -rf \
+    /home/eqos/.cargo/registry \
+    /home/eqos/.cargo/git \
+    /home/eqos/.rustup/toolchains/*/share/doc \
+    /home/eqos/.rustup/tmp \
+    /home/eqos/eQ/target/debug \
+    /home/eqos/eQ/.git \
+    /tmp/rustup-install.sh \
+    /tmp/build-eq.sh || true
+
+
+# ≡≡≡≡≡≡≡≡≡ Remove eQ artifacts ≡≡≡≡≡≡≡≡≡
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+echo "Removing eQ build artifacts..."
+rm -rf \
+    /home/eqos/eQ/target/release/deps \
+    /home/eqos/eQ/target/release/build \
+    /home/eqos/eQ/target/release/incremental || true
+
+
+# ≡≡≡≡≡≡≡≡≡ Clean system ≡≡≡≡≡≡≡≡≡
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+echo "Cleaning system..."
+rm -rf \
+    /var/tmp/* \
+    /tmp/* \
+    /var/log/* \
+    /root/.cache \
+    /var/lib/apt/lists/* \
+    /var/cache/apt/archives/* || true
+
+find /var/log -type f -exec truncate -s 0 {} + 2>/dev/null || true
+
+
+# ≡≡≡≡≡≡≡≡≡ mkosi.finalize.chroot done ≡≡≡≡≡≡≡≡≡
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+echo "mkosi.finalize.chroot finished"
