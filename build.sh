@@ -2,8 +2,8 @@
 set -euo pipefail
 
 
-# ≡≡≡≡≡≡≡≡≡  initialize logging  ≡≡≡≡≡≡≡≡≡
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# ≡≡≡≡≡≡≡≡≡ Initialize logging ≡≡≡≡≡≡≡≡≡
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 LOG_DIR="log"
 mkdir -p "$LOG_DIR"
@@ -17,8 +17,8 @@ echo "Build started at $(date)"
 echo "Log file: $LOG_FILE"
 
 
-# ≡≡≡≡≡≡≡≡≡  configure environment  ≡≡≡≡≡≡≡≡≡
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# ≡≡≡≡≡≡≡≡≡ Configure environment ≡≡≡≡≡≡≡≡≡
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 export PATH="$PATH:/usr/bin:/sbin:/usr/sbin"
 
@@ -27,18 +27,18 @@ OUTPUT_DIR="ISO"
 QEMU_DIR="qemu"
 
 
-# ≡≡≡≡≡≡≡≡≡  prepare build directories  ≡≡≡≡≡≡≡≡≡
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# ≡≡≡≡≡≡≡≡≡ Prepare build directories ≡≡≡≡≡≡≡≡≡
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 mkosi clean
 rm -rf "$OUTPUT_DIR"
 mkdir -p "$OUTPUT_DIR"
 
 
-# ≡≡≡≡≡≡≡≡≡  build os image  ≡≡≡≡≡≡≡≡≡
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
+# ≡≡≡≡≡≡≡≡≡ Build os image ≡≡≡≡≡≡≡≡≡
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 echo "Running mkosi build..."
+
 mkosi build
 
 if [ ! -f "$OUTPUT_DIR/$IMAGE" ]; then
@@ -49,8 +49,8 @@ fi
 echo "Image built successfully: $OUTPUT_DIR/$IMAGE"
 
 
-# ≡≡≡≡≡≡≡≡≡  prepare qemu firmware  ≡≡≡≡≡≡≡≡≡
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# ≡≡≡≡≡≡≡≡≡ Prepare qemu firmware ≡≡≡≡≡≡≡≡≡
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 OVMF_CODE="/usr/share/edk2/x64/OVMF_CODE.4m.fd"
 OVMF_VARS_SRC="/usr/share/edk2/x64/OVMF_VARS.4m.fd"
@@ -74,14 +74,5 @@ qemu-system-x86_64 \
     -vga virtio \
     -display gtk,gl=off,show-cursor=on \
     -serial mon:stdio
-
-# qemu-system-x86_64 \
-#   -m 2048 \
-#   -enable-kvm \
-#   -cpu host \
-#   -drive file="$OUTPUT_DIR/$IMAGE",format=raw,if=virtio \
-#   -vga virtio \
-#   -display gtk,gl=off,show-cursor=on \
-#   -serial mon:stdio
 
 echo "Build & boot finished"

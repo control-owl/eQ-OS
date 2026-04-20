@@ -14,7 +14,7 @@ mkdir -p /etc/default
 printf 'LANG=C.UTF-8\n' > /etc/default/locale
 
 
-# ≡≡≡≡≡≡≡ setup user profile ≡≡≡≡≡≡≡
+# ≡≡≡≡≡≡≡ Setup user profile ≡≡≡≡≡≡≡
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 echo "Setting up user profile..."
 
@@ -52,16 +52,17 @@ chmod 600 /home/eqos/.Xauthority
 chown eqos:eqos /home/eqos/.Xauthority
 
 
-# ≡≡≡≡≡≡≡ configure systemd services ≡≡≡≡≡≡≡
+# ≡≡≡≡≡≡≡ Configure systemd services ≡≡≡≡≡≡≡
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 echo "Configuring systemd services..."
 
 systemctl set-default multi-user.target
 
-systemctl mask systemd-networkd.service \
-                systemd-resolved.service \
-                NetworkManager.service \
-                wpa_supplicant.service || true
+systemctl mask \
+    systemd-networkd.service \
+    systemd-resolved.service \
+    NetworkManager.service \
+    wpa_supplicant.service || true
 
 
 # ≡≡≡≡≡≡≡ Kiosk permission ≡≡≡≡≡≡≡
@@ -82,6 +83,21 @@ update-initramfs -u
 plymouth-set-default-theme eqos
 systemctl enable plymouth-start.service
 
+
+# ≡≡≡≡≡≡≡ Extract version ≡≡≡≡≡≡≡
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+VERSION_NUMBER=$(head -n 1 changelog.md | cut -d ':' -f 2- | tr -d ' #version')
+
+if [[ ! "$VERSION_NUMBER" =~ ^[0-9]+\.[0-9]+$ ]]; then
+    echo "Error: VERSION_NUMBER is not in valid format: ${VERSION_NUMBER}"
+    echo "Expected format: 1.2"
+    exit 1
+fi
+echo "$VERSION_NUMBER" | tee -a /home/eqos/VERSION
+
+BUILD_DATE=$(date +"%Y-%m-%d_%H-%M-%S")
+echo "$BUILD_DATE" | tee -a /home/eqos/BUILD
 
 # ≡≡≡≡≡≡≡≡≡ mkosi.postinst.chroot done ≡≡≡≡≡≡≡≡≡
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
