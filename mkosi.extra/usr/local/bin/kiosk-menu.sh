@@ -94,12 +94,10 @@ create_wallet_menu() {
 
         case "$SUBCHOICE" in
             1)
-                echo "create_encrypted_and_public"
-                read -p "Press Enter to continue..."
+                call_main_menu "CREATE WALLET DISK"
                 ;;
             2)
-                echo "create_encrypted_only"
-                read -p "Press Enter to continue..."
+                call_main_menu "CREATE WALLET DISK"
                 ;;
             3)
                 call_main_menu "MAIN MENU"
@@ -108,6 +106,7 @@ create_wallet_menu() {
             *)
                 echo "Invalid option"
                 sleep 1
+                call_main_menu "CREATE WALLET DISK"
                 ;;
         esac
     done
@@ -134,8 +133,6 @@ while true; do
             create_wallet_menu
             ;;
         3)
-            echo "detach_and_remove_wallet"
-            read -p "Press Enter to continue..."
             call_main_menu "MAIN MENU"
             ;;
         4)
@@ -144,6 +141,7 @@ while true; do
         *)
             echo "Invalid option"
             sleep 1
+            call_main_menu "MAIN MENU"
             ;;
     esac
 done

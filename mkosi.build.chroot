@@ -1,5 +1,5 @@
-#!/bin/sh
-set -eux
+#!/usr/bin/env bash
+set -euo pipefail -x
 
 # ≡≡≡≡≡≡≡≡≡ mkosi.build.chroot ≡≡≡≡≡≡≡≡≡
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -60,9 +60,11 @@ git clone \
     https://github.com/control-owl/eQ.git
 
 cd eQ
+
+export CARGO_TARGET_DIR="$BUILDDIR/target"
 cargo build --release
 
-install -D -m 0755 target/release/eQ "$DESTDIR/usr/local/bin/eQ"
+install -D -m 0755 $BUILDDIR/target/release/eQ "$DESTDIR/usr/local/bin/eQ"
 
 if [ ! -x "$DESTDIR/usr/local/bin/eQ" ]; then
     echo "ERROR: eQ binary installation failed!"
