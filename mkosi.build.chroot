@@ -61,6 +61,16 @@ git clone \
 
 cd eQ
 
+VERSION_NUMBER=$(head -n 1 Changelog.md | cut -d ':' -f 2- | tr -d ' #version')
+if [[ ! "$VERSION_NUMBER" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    echo "Error: VERSION_NUMBER is not in valid format: ${VERSION_NUMBER}"
+    echo "Expected format: 1.2.3"
+    exit 1
+fi
+
+mkdir -p $DESTDIR/usr/local/eqos
+echo "$VERSION_NUMBER" | tee -a $DESTDIR/usr/local/eqos/version
+
 export CARGO_TARGET_DIR="$BUILDDIR/target"
 cargo build --release
 
@@ -70,7 +80,7 @@ if [ ! -x "$DESTDIR/usr/local/bin/eQ" ]; then
     echo "ERROR: eQ binary installation failed!"
     exit 1
 else
-    echo "eQ installed"
+    echo "eQ $VERSION_NUMBER installed"
 fi
 
 

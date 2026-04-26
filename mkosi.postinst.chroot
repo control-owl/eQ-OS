@@ -19,12 +19,35 @@ if ! id eqos >/dev/null 2>&1; then
         --user-group eqos
 fi
 
+
+cat > /home/eqos/.profile << 'EOF'
+#!/bin/sh  
+if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then  
+    exec startx  
+fi
+EOF
+
+cp /home/eqos/.profile /home/eqos/.bashrc
+
+cat > /home/eqos/.xsession << 'EOF'
+exec eQ
+EOF
+
+chmod 755 /home/eqos/.xsession
+chown eqos:eqos /home/eqos/.xsession
+
+touch /home/eqos/.Xauthority
+chmod 600 /home/eqos/.Xauthority
+chown eqos:eqos /home/eqos/.Xauthority
+
 usermod -aG video,input,render,tty eqos
 
 
-# ≡≡≡≡≡≡≡ Configure plymouth ≡≡≡≡≡≡≡
+# ≡≡≡≡≡≡≡ Configure services ≡≡≡≡≡≡≡
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-echo "Configuring plymouth service..."
+echo "Configuring service..."
+
+# systemctl enable eqos.service
 
 plymouth-set-default-theme -R eqos
 systemctl enable plymouth.service
@@ -33,17 +56,52 @@ systemctl enable plymouth.service
 # ≡≡≡≡≡≡≡ Extract version ≡≡≡≡≡≡≡
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-VERSION_NUMBER=$(head -n 1 changelog.md | cut -d ':' -f 2- | tr -d ' #version')
+eQ_OS_VERSION=$(head -n 1 changelog.md | cut -d ':' -f 2- | tr -d ' #version')
 
-if [ ! "$VERSION_NUMBER" =~ ^[0-9]+\.[0-9]+$ ]; then
-    echo "Error: VERSION_NUMBER is not in valid format: ${VERSION_NUMBER}"
+if [ ! "$eQ_OS_VERSION" =~ ^[0-9]+\.[0-9]+$ ]; then
+    echo "Error: eQ_OS_VERSION is not in valid format: ${eQ_OS_VERSION}"
     echo "Expected format: 1.2"
     exit 1
 fi
-echo "$VERSION_NUMBER" | tee -a /home/eqos/VERSION
+echo "$eQ_OS_VERSION" | tee -a /home/eqos/eQ-OS.version
 
-BUILD_DATE=$(date +"%Y-%m-%d_%H-%M-%S")
+BUILD_DATE=$(date +"%Y-%m-%dT%H:%M:%S")
 echo "$BUILD_DATE" | tee -a /home/eqos/BUILD
+
+
+eQ_VERSION_FILE="/usr/local/eqos/version"
+eQ_VERSION="unknown"
+[ -f "$eQ_VERSION_FILE" ] && eQ_VERSION=$(cat "$eQ_VERSION_FILE")
+
+MOTD="$(cat <<EOF
+--------------------------- WELCOME ----------------------------
+
+    eQ-OS
+    ------------------------------------------------------------
+        Version:   $eQ_OS_VERSION
+        Build:     $BUILD_DATE
+
+
+    eQ
+    ------------------------------------------------------------
+        Version:   $eQ_VERSION
+
+
+    MESSAGE
+    ------------------------------------------------------------
+        "Beyond the veil of silicon,
+        where entropy dances unseen,
+        your will shapes the order.
+        Guard the seed. Shape the path."
+
+----------------------------------------------------------------
+
+Starting eQ...
+EOF
+)"
+
+printf '%s\n' "$MOTD" > /etc/motd
+
 
 
 # ≡≡≡≡≡≡≡≡≡ mkosi.postinst.chroot done ≡≡≡≡≡≡≡≡≡
