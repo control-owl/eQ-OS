@@ -72,7 +72,7 @@ qemu-system-x86_64 \
     -drive if=pflash,format=raw,file="$OVMF_VARS_LOCAL" \
     -drive file="$OUTPUT_DIR/$IMAGE",format=raw,if=virtio \
     -vga virtio \
-    -display gtk,gl=off,show-cursor=on \
+    -display gtk,gl=on,show-cursor=on \
     -serial mon:stdio
 
 echo "Build & boot finished"

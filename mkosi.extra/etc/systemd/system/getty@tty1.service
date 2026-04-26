@@ -1,0 +1,30 @@
+[Unit]
+Description=eQ Kiosk
+After=systemd-logind.service dbus.service
+Wants=systemd-logind.service dbus.service
+
+[Service]
+PAMName=login
+
+TTYPath=/dev/tty1
+TTYReset=yes
+TTYVHangup=yes
+TTYVTDisallocate=yes
+
+User=eqos
+Group=eqos
+
+Type=simple
+StandardInput=tty
+StandardOutput=journal
+StandardError=journal
+
+ExecStart=/usr/bin/xinit /usr/local/bin/eQ -- :0 vt1 -nolisten tcp -allowMouseOpenFail
+Restart=no
+TimeoutStopSec=5
+KillMode=control-group
+
+ExecStopPost=/usr/bin/systemctl -f poweroff
+
+[Install]
+WantedBy=multi-user.target

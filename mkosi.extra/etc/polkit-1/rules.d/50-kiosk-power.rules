@@ -1,12 +1,10 @@
 polkit.addRule(function(action, subject) {
-    var allowed = [
-        "org.freedesktop.login1.power-off",
-        "org.freedesktop.login1.reboot",
-        "org.freedesktop.login1.power-off-multiple-sessions",
-        "org.freedesktop.login1.reboot-multiple-sessions"
-    ];
-    if (allowed.indexOf(action.id) >= 0) {
-        if (subject.user == "eqos" && subject.local && subject.active) {
+    if (subject.user == "eqos") {
+        if (
+            action.id == "org.freedesktop.login1.power-off" ||
+            action.id == "org.freedesktop.login1.power-off-multiple-sessions" ||
+            action.id == "org.freedesktop.login1.reboot"
+        ) {
             return polkit.Result.YES;
         }
     }
