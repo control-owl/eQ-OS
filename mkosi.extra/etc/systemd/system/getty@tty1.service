@@ -21,7 +21,7 @@ StandardError=journal
 
 ExecStart=/usr/bin/xinit /usr/local/bin/eQ -- :0 vt1 -nolisten tcp -allowMouseOpenFail
 Restart=no
-TimeoutStopSec=5
+TimeoutStopSec=3
 KillMode=control-group
 
 ExecStopPost=/usr/bin/systemctl -f poweroff

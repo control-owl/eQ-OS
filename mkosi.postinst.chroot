@@ -6,14 +6,6 @@ set -euo pipefail -x
 echo "Starting mkosi.postinst.chroot..."
 
 
-# ≡≡≡≡≡≡≡ configure system locale ≡≡≡≡≡≡≡
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-echo "Configuring system locale..."
-
-mkdir -p /etc/default
-printf 'LANG=C.UTF-8\n' > /etc/default/locale
-
-
 # ≡≡≡≡≡≡≡ Setup user profile ≡≡≡≡≡≡≡
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 echo "Setting up user profile..."
@@ -29,22 +21,14 @@ fi
 
 usermod -aG video,input,render,tty eqos
 
-# cat > /home/eqos/.xinitrc << 'EOF'
-# #!/bin/sh
-# exec /usr/local/bin/eQ
-# EOF
 
-# chmod +x /home/eqos/.xinitrc
-
-# ≡≡≡≡≡≡≡ Configure systemd services ≡≡≡≡≡≡≡
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-echo "Configuring systemd services..."
+# ≡≡≡≡≡≡≡ Configure plymouth ≡≡≡≡≡≡≡
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+echo "Configuring plymouth service..."
 
 plymouth-set-default-theme -R eqos
 systemctl enable plymouth.service
 
-# systemd-machine-id-setup
-# update-initramfs -u -k all
 
 # ≡≡≡≡≡≡≡ Extract version ≡≡≡≡≡≡≡
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
