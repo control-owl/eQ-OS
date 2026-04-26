@@ -1,3 +1,12 @@
+# version 0.4
+-new partitioning:
+    - boot
+    - root verity signature
+    - root verity
+    - immutable root partition
+    - writable home partition
+- custom motto of the day
+
 # version 0.3
 - new kiosk
 

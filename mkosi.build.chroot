@@ -22,11 +22,11 @@ fi
 
 # ≡≡≡≡≡≡≡≡≡ Prepare rust ≡≡≡≡≡≡≡≡≡
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-export HOME=/home/eqos
-export CARGO_HOME=/home/eqos/.cargo
-export RUSTUP_HOME=/home/eqos/.rustup
-export USER=eqos
-export PATH=/home/eqos/.cargo/bin:/usr/bin:/bin:/usr/sbin
+export HOME="/home/eqos"
+export CARGO_HOME="/home/eqos/.cargo"
+export RUSTUP_HOME="/home/eqos/.rustup"
+export USER="eqos"
+export PATH="/home/eqos/.cargo/bin:/usr/bin:/bin:/usr/sbin"
 
 
 # ≡≡≡≡≡≡≡≡≡ Install rust ≡≡≡≡≡≡≡≡≡
@@ -61,20 +61,20 @@ git clone \
 
 cd eQ
 
-VERSION_NUMBER=$(head -n 1 Changelog.md | cut -d ':' -f 2- | tr -d ' #version')
+VERSION_NUMBER="$(head -n 1 Changelog.md | cut -d ':' -f 2- | tr -d ' #version')"
 if [[ ! "$VERSION_NUMBER" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     echo "Error: VERSION_NUMBER is not in valid format: ${VERSION_NUMBER}"
     echo "Expected format: 1.2.3"
     exit 1
 fi
 
-mkdir -p $DESTDIR/usr/local/eqos
-echo "$VERSION_NUMBER" | tee -a $DESTDIR/usr/local/eqos/version
+mkdir -p "$DESTDIR/usr/local/eqos"
+echo "$VERSION_NUMBER" | tee -a "$DESTDIR/usr/local/eqos/version"
 
 export CARGO_TARGET_DIR="$BUILDDIR/target"
 cargo build --release
 
-install -D -m 0755 $BUILDDIR/target/release/eQ "$DESTDIR/usr/local/bin/eQ"
+install -D -m 0755 "$BUILDDIR/target/release/eQ" "$DESTDIR/usr/local/bin/eQ"
 
 if [ ! -x "$DESTDIR/usr/local/bin/eQ" ]; then
     echo "ERROR: eQ binary installation failed!"
