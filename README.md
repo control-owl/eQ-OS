@@ -36,7 +36,7 @@ Partitions are defined in `mkosi.repart/`:
 
 ## Security
 
-- Xorg runs without systemd-logind (no 25s timeout)
+- Xorg runs without systemd-logind
 - No unnecessary services
 - Root is immutable
 - All changes stay on the USB stick only
@@ -101,4 +101,7 @@ You can test it, it is working very fine for now, but I will redesign this over 
 
 If you think this makes any sense, buy me a beer
 
-<a href="https://www.buymeacoffee.com/control.owl"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a beer&emoji=🍺&slug=control.owl&button_colour=014070&font_colour=ffffff&font_family=Lato&outline_colour=ffffff&coffee_colour=FFDD00" /></a>
+
+<a href="https://buymeacoffee.com/control.owl">
+  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me a Coffee" width="200" height="60">
+</a>
