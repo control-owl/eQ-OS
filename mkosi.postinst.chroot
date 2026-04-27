@@ -30,15 +30,15 @@ EOF
 cp /home/eqos/.profile /home/eqos/.bashrc
 
 cat > /home/eqos/.xsession << 'EOF'
+xset -dpms
+xset s off
 exec eQ
 EOF
 
-chmod 755 /home/eqos/.xsession
-chown eqos:eqos /home/eqos/.xsession
-
 touch /home/eqos/.Xauthority
+
+chmod 755 /home/eqos/.xsession
 chmod 600 /home/eqos/.Xauthority
-chown eqos:eqos /home/eqos/.Xauthority
 
 usermod -aG video,input,render,tty eqos
 
@@ -47,11 +47,13 @@ usermod -aG video,input,render,tty eqos
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 echo "Configuring service..."
 
-# systemctl enable eqos.service
-
 plymouth-set-default-theme -R eqos
 systemctl enable plymouth.service
 
+systemctl mask systemd-logind.service
+systemctl mask dbus.service
+systemctl mask dbus.socket
+systemctl mask systemd-user-sessions.service
 
 # ≡≡≡≡≡≡≡ Extract version ≡≡≡≡≡≡≡
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

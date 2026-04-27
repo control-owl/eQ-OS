@@ -1,3 +1,7 @@
+# version 0.5
+- fuck yeah!!!!
+- boot time 10 sec
+
 # version 0.4
 -new partitioning:
     - boot

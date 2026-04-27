@@ -24,6 +24,7 @@ export PATH="$PATH:/usr/bin:/sbin:/usr/sbin"
 
 IMAGE="eQ-OS.raw"
 OUTPUT_DIR="ISO"
+KEYS_DIR="keys"
 QEMU_DIR="qemu"
 
 
@@ -33,6 +34,17 @@ QEMU_DIR="qemu"
 mkosi clean
 rm -rf "$OUTPUT_DIR"
 mkdir -p "$OUTPUT_DIR"
+mkdir -p "$KEYS_DIR"
+
+
+# ≡≡≡≡≡≡≡≡≡ Prepare keys ≡≡≡≡≡≡≡≡≡
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+if [ ! -f "keys/mkosi.crt" ] || [ ! -f "keys/mkosi.key" ]; then
+    (
+        cd "$KEYS_DIR"
+        mkosi genkey
+    )
+fi
 
 
 # ≡≡≡≡≡≡≡≡≡ Build os image ≡≡≡≡≡≡≡≡≡
@@ -72,7 +84,7 @@ qemu-system-x86_64 \
     -drive if=pflash,format=raw,file="$OVMF_VARS_LOCAL" \
     -drive file="$OUTPUT_DIR/$IMAGE",format=raw,if=virtio \
     -vga virtio \
-    -display gtk,gl=on,show-cursor=on \
+    -display gtk,gl=off,show-cursor=on \
     -serial mon:stdio
 
 echo "Build & boot finished"
