@@ -1,5 +1,0 @@
-#!/bin/sh
-# eQ-OS panic shutdown
-echo 1 > /proc/sys/kernel/sysrq
-echo s > /proc/sysrq-trigger   # sync
-echo o > /proc/sysrq-trigger   # immediate power off

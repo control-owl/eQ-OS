@@ -46,26 +46,6 @@ chmod 600 /home/eqos/.Xauthority
 usermod -aG video,input,render,tty eqos
 
 
-
-
-# Enable magic sysrq
-cat > /etc/sysctl.d/99-sysrq.conf << EOF
-kernel.sysrq = 1
-EOF
-
-# Install panic script
-chmod 755 /usr/local/bin/eqos-panic
-chown root:root /usr/local/bin/eqos-panic
-chmod 4755 /usr/local/bin/eqos-panic
-
-# Dead-man switch
-cat > /etc/udev/rules.d/99-eqos-deadman.rules << 'EOF'
-ACTION=="remove", SUBSYSTEM=="usb", RUN+="/usr/local/bin/eqos-panic"
-EOF
-
-
-
-
 # ≡≡≡≡≡≡≡ Configure services ≡≡≡≡≡≡≡
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 echo "Configuring service..."

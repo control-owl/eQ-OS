@@ -1,3 +1,6 @@
+# version 0.6
+- instant shutdown
+
 # version 0.5
 - fuck yeah!!!!
 - boot time 10 sec
@@ -17,7 +20,7 @@
 # version 0.2
 - kiosk mode
 - shutdown
--image reduce to 1.9GB
+- image reduce to 1.9GB
 
 # version 0.1
 - autologin
