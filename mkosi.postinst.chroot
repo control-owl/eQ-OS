@@ -21,18 +21,21 @@ fi
 
 
 cat > /home/eqos/.profile << 'EOF'
-#!/bin/sh  
-if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then  
-    exec startx  
+#!/bin/sh
+if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
+    startx > /dev/null 2>&1
+    exit
 fi
 EOF
 
 cp /home/eqos/.profile /home/eqos/.bashrc
 
 cat > /home/eqos/.xsession << 'EOF'
+#!/bin/sh
 xset -dpms
 xset s off
-exec eQ
+xset s noblank
+eQ
 EOF
 
 touch /home/eqos/.Xauthority
@@ -41,6 +44,26 @@ chmod 755 /home/eqos/.xsession
 chmod 600 /home/eqos/.Xauthority
 
 usermod -aG video,input,render,tty eqos
+
+
+
+
+# Enable magic sysrq
+cat > /etc/sysctl.d/99-sysrq.conf << EOF
+kernel.sysrq = 1
+EOF
+
+# Install panic script
+chmod 755 /usr/local/bin/eqos-panic
+chown root:root /usr/local/bin/eqos-panic
+chmod 4755 /usr/local/bin/eqos-panic
+
+# Dead-man switch
+cat > /etc/udev/rules.d/99-eqos-deadman.rules << 'EOF'
+ACTION=="remove", SUBSYSTEM=="usb", RUN+="/usr/local/bin/eqos-panic"
+EOF
+
+
 
 
 # ≡≡≡≡≡≡≡ Configure services ≡≡≡≡≡≡≡

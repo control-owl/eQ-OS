@@ -99,7 +99,7 @@ You can test it, it is working very fine for now, but I will redesign this over 
 ---
 
 
-If you think this makes any sense, buy me a beer
+If you think this makes any sense, buy me a beer or a coffee...
 
 
 <a href="https://buymeacoffee.com/control.owl">
