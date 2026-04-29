@@ -1,5 +1,6 @@
 # version 0.6
 - instant shutdown
+- starting CI/CD
 
 # version 0.5
 - fuck yeah!!!!
