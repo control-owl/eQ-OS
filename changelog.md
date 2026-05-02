@@ -1,3 +1,7 @@
+# version 0.7.0
+- build eQ with --feature="mkosi"
+- on-screen keyboard
+
 # version 0.6
 - instant shutdown
 - starting CI/CD

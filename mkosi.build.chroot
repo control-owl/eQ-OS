@@ -72,7 +72,7 @@ mkdir -p "$DESTDIR/usr/local/eqos"
 echo "$VERSION_NUMBER" | tee -a "$DESTDIR/usr/local/eqos/version"
 
 export CARGO_TARGET_DIR="$BUILDDIR/target"
-cargo build --release
+cargo build --release --features="mkosi"
 
 install -D -m 0755 "$BUILDDIR/target/release/eQ" "$DESTDIR/usr/local/bin/eQ"
 
