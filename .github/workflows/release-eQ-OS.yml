@@ -43,7 +43,7 @@ jobs:
 
       - name: "Upgrade mkosi"
         run: |
-          pip install mkosi==26 --user
+          pip install mkosi==25 --user
           
       - name: "Prepare build environment"
         run: |
