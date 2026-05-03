@@ -39,8 +39,13 @@ jobs:
             systemd-container \
             qemu-utils \
             mtools \
+            python3-pip \
             mkosi
 
+      - name: "Upgrade mkosi"
+        run: |
+          pip install --upgrade mkosi
+          
       - name: "Prepare build environment"
         run: |
           chmod +x build.sh
