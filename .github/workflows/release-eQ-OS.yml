@@ -33,16 +33,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            python3-pipx \
             git \
             debootstrap \
             ubuntu-keyring \
             systemd-container \
             qemu-utils \
             mtools \
-            xorriso \
-            dosfstools \
-            squashfs-tools \
             mkosi
 
       - name: "Prepare build environment"
