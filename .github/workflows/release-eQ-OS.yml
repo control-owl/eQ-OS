@@ -41,9 +41,14 @@ jobs:
             mtools \
             python3-pip
 
-      - name: "Upgrade mkosi"
+      - name: Clone mkosi
         run: |
-          pip install mkosi==25 --user
+          git clone https://github.com/systemd/mkosi.git
+          cd mkosi
+          pip3 install -e .
+      
+      - name: Verify mkosi installation
+        run: mkosi --version
           
       - name: "Prepare build environment"
         run: |
