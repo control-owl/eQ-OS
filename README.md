@@ -19,6 +19,18 @@ Designed as secure cold storage wallet on a stick.
 - Single user `eqos` with autologin on tty1
 - Custom Plymouth theme and welcome MOTD
 
+
+## Project status
+
+| **Security Status**  |
+| -------------------- |
+| [![Verify GPG Signature](https://github.com/control-owl/eQ-OS/actions/workflows/verify-gpg-signature.yml/badge.svg)](https://github.com/control-owl/eQ-OS/actions/workflows/verify-gpg-signature.yml) |
+| [![CodeQL](https://github.com/control-owl/eQ-OS/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/control-owl/eQ-OS/actions/workflows/github-code-scanning/codeql) |
+
+| **ISO Build Status**     |
+| -------------------- |
+| [![Linux x86_64 GNU](https://github.com/control-owl/eQ-OS/actions/workflows/release-eQ-OS.yml/badge.svg)](https://github.com/control-owl/eQ-OS/actions/workflows/release-eQ-OS.yml) |
+
 ## mkosi Configuration
 
 - **Distribution**: Debian trixie
