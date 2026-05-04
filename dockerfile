@@ -10,9 +10,10 @@ RUN pacman -Sy --noconfirm \
     dosfstools \
     parted \
     qemu-img \
+    debian-archive-keyring \
     mtools
 
-COPY . /workspace-src
+COPY . /workspace
 
 WORKDIR /workspace
 
