@@ -16,6 +16,8 @@ COPY . /workspace-src
 
 WORKDIR /workspace
 
-RUN mkdir -p /workspace/.mkosi-cache
+RUN mkdir -p /workspace/.mkosi-cache \
+    /workspace/.mkosi.builddir \
+    /workspace/.ISO
 
 CMD ["/bin/bash"]
