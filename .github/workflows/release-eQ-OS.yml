@@ -1,7 +1,16 @@
-name: Build eQ-OS ISO
+name: Release eQ-OS ISO
 
 on:
-  workflow_dispatch:
+  workflow_run:
+    workflows: [ "Verify GPG Signature" ]
+    types:
+      - completed
+    branches: [ "stable" ]
+
+permissions:
+  contents: write
+  packages: write
+  id-token: write
 
 jobs:
   build:
@@ -32,3 +41,112 @@ jobs:
         with:
           name: eq-os-image
           path: eQ-OS.raw
+
+# jobs:
+#   build-iso:
+#     name: eQ-OS ISO x86_64
+#     runs-on: ubuntu-latest
+
+#     env:
+#       APP_NAME: "eQ-OS"
+#       IMAGE_NAME: "eQ-OS.raw"
+#       OUTPUT_DIR: "ISO"
+#       VERSION_FILE: "changelog.md"
+
+#     steps:
+#       - name: "Checkout repository"
+#         uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 0
+
+#       - name: "Install system dependencies"
+#         run: |
+#           sudo apt-get update
+#           sudo apt-get install -y \
+#             git \
+#             debootstrap \
+#             ubuntu-keyring \
+#             systemd-container \
+#             qemu-utils \
+#             mtools \
+#             mkosi
+
+#       - name: "Prepare build environment"
+#         run: |
+#           chmod +x build.sh
+#           mkdir -p log keys ISO
+
+#       - name: "Run build.sh"
+#         run: |
+#           ./build.sh
+
+#       - name: "Extract version number"
+#         run: |
+#           VERSION_NUMBER=$(head -n 1 ${{ env.VERSION_FILE }} | cut -d ':' -f 2- | tr -d ' #version')
+
+#           if [[ ! "$VERSION_NUMBER" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+#             echo "Error: VERSION_NUMBER is not in valid format: ${VERSION_NUMBER}"
+#             echo "Expected format: 1.2.3"
+#             exit 1
+#           fi
+#           echo "VERSION_NUMBER=${VERSION_NUMBER}" | tee -a $GITHUB_ENV
+#           echo "VERSION=v${VERSION_NUMBER}" >> $GITHUB_ENV
+
+#       - name: "Create signed tag"
+#         run: |
+#           git config user.name "${{ env.APP_NAME }}"
+#           git config user.email "${{ secrets.ACTIONS_EMAIL }}"
+          
+#           echo "Checking if tag ${{ env.VERSION }} exists..."
+          
+#           if [ -n "$(git ls-remote --tags origin "${{ env.VERSION }}")" ]; then
+#             echo "Tag ${{ env.VERSION }} already exists on remote, skipping."
+#           else
+#             echo "Tag ${{ env.VERSION }} does not exist. Creating new signed tag."
+            
+#             if ! git tag -a "${{ env.VERSION }}" -m "Release ${{ env.VERSION }}"; then
+#               echo "GPG signing failed"
+#               exit 1
+#             fi
+          
+#             if ! git push origin "${{ env.VERSION }}"; then
+#               echo "Tag push failed"
+#               exit 1
+#             fi
+          
+#             echo "Tag ${{ env.VERSION }} created successfully."
+#           fi
+
+#       - name: "Prepare release assets"
+#         run: |
+#           cd "${{ env.OUTPUT_DIR }}"
+          
+#           # Rename for release clarity
+#           ISO_FILE="${{ env.APP_NAME }}-${{ env.VERSION_NUMBER }}.iso"
+#           mv "${{ env.IMAGE_NAME }}" "${ISO_FILE}"
+          
+#           # Generate SHA256 checksum
+#           sha256sum "${ISO_FILE}" > "${ISO_FILE}.sha256"
+          
+#           echo "ISO_FILE=${ISO_FILE}" >> $GITHUB_ENV
+#           echo "Release assets prepared"
+
+#       - name: "Upload to GitHub Releases"
+#         uses: softprops/action-gh-release@v2
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#         with:
+#           files: |
+#             ${{ env.OUTPUT_DIR }}/${{ env.ISO_FILE }}
+#             ${{ env.OUTPUT_DIR }}/${{ env.ISO_FILE }}.sha256
+#             Changelog.md
+#             LICENSE.txt
+#           draft: false
+#           prerelease: true
+#           tag_name: v${{ env.VERSION_NUMBER }}
+#           name: "eQ-OS v${{ env.VERSION_NUMBER }}"
+#           body: |
+#             eQ-OS release build
+            
+#             **Image:** ${{ env.ISO_FILE }}
+#             **Format:** RAW (bootable GPT disk image)
