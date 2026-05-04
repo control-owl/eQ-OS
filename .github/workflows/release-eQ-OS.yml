@@ -26,22 +26,21 @@ jobs:
 
       - name: Run mkosi inside privileged container
         run: |
-          mkdir -p ${{ github.workspace }}/output
           docker run --privileged \
-            -v ${{ github.workspace }}/output:/output \
+            -v ${{ github.workspace }}:/workspace \
             mkosi-builder \
             bash -c "
-              cp -r /workspace-src /workspace
               cd /workspace
+              mkdir -p keys
+              if [ ! -f keys/mkosi.key ]; then (cd keys && mkosi genkey); fi
               ./build.sh
-              cp ISO/eQ-OS.raw /output/eQ-OS.iso
             "
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: eq-os-image
-          path: eQ-OS.iso
+          path: eQ-OS.raw
 
 # jobs:
 #   build-iso:
