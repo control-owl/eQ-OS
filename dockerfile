@@ -13,6 +13,7 @@ RUN pacman -Sy --noconfirm \
     debian-archive-keyring \
     apt \
     diffutils \
+    cpio \
     mtools
 
 COPY . /workspace
