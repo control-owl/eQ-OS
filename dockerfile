@@ -12,6 +12,7 @@ RUN pacman -Sy --noconfirm \
     qemu-img \
     debian-archive-keyring \
     apt \
+    diffutils \
     mtools
 
 COPY . /workspace
