@@ -27,13 +27,13 @@ jobs:
       - name: Run mkosi inside privileged container
         run: |
           docker run --privileged \
-            -v ${{ github.workspace }}:/workspace \
+            -v ${{ github.workspace }}/output:/output \
             mkosi-builder \
             bash -c "
+              cp -r /workspace-src /workspace
               cd /workspace
-              mkdir -p keys
-              if [ ! -f keys/mkosi.key ]; then (cd keys && mkosi genkey); fi
               mkosi build
+              cp eQ-OS.raw /output/
             "
 
       - name: Upload artifact
