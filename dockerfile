@@ -11,6 +11,6 @@ RUN pacman -Sy --noconfirm \
     e2fsprogs \
     qemu-img \
     mtools \
-    gpg
+    gnupg
 
 WORKDIR /workspace
