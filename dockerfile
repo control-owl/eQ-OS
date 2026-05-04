@@ -11,6 +11,7 @@ RUN pacman -Sy --noconfirm \
     parted \
     qemu-img \
     debian-archive-keyring \
+    apt \
     mtools
 
 COPY . /workspace
