@@ -33,7 +33,7 @@ jobs:
             bash -c "
               cp -r /workspace-src /workspace
               cd /workspace
-              mkosi build
+              ./build.sh
               cp ISO/eQ-OS.raw /output/eQ-OS.iso
             "
 
