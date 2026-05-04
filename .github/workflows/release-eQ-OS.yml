@@ -32,7 +32,7 @@ jobs:
             bash -c "
               cd /workspace
               mkdir -p keys
-              if [ ! -f keys/mkosi.key ]; then mkosi genkey; fi
+              if [ ! -f keys/mkosi.key ]; then (cd keys && mkosi genkey); fi
               mkosi build
             "
 
