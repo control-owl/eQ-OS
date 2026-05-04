@@ -25,6 +25,9 @@ RUN mkdir -p \
     /workspace/.mkosi-cache \
     /workspace/.mkosi.cache \
     /workspace/.mkosi.tools \
-    /workspace/.ISO
+    /workspace/.ISO \
+    /work && \
+    chmod 1777 /workspace /var/tmp/mkosi-tmp /work && \
+    chown -R root:root /workspace /var/tmp/mkosi-tmp /work
 
 CMD ["/bin/bash"]
