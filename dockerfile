@@ -18,6 +18,7 @@ WORKDIR /workspace
 
 RUN mkdir -p /workspace/.mkosi-cache \
     /workspace/.mkosi.builddir \
+    /workspace/.mkosi.cache \
     /workspace/.mkosi.tools \
     /workspace/.ISO
 
