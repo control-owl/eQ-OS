@@ -36,7 +36,17 @@ jobs:
               mkdir -p keys
               if [ ! -f keys/mkosi.key ]; then (cd keys && mkosi genkey); fi
               mkosi build
+
+              cp -v /workspace/eQ-OS.raw /output/
+              cp -v /workspace/eQ-OS.vmlinuz /output/
+              cp -v /workspace/eQ-OS.initrd /output/
+              cp -v /workspace/eQ-OS.SHA256SUMS /output/
             "
+      - name: Upload ISO artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: eQ-OS-iso
+          path: output/
 
       # - name: Upload artifact
       #   uses: actions/upload-artifact@v4
