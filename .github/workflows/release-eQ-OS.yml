@@ -26,14 +26,10 @@ jobs:
 
       - name: Run mkosi inside privileged container
         run: |
-          docker run --rm --privileged \
-            --tmpfs /var/tmp:rw,size=4g \
-            -v ${{ github.workspace }}/output:/output:rw \
-            -v /dev:/dev \
-            -v /sys:/sys:ro \
-            -e TMPDIR=/var/tmp \
-            -e MKOSI_TMPDIR=/var/tmp \
-            -e MKOSI_CACHE_DIR=/workspace/.mkosi-cache \
+          docker run --privileged \
+            --tmpfs /work:rw,exec,size=4G \
+            --tmpfs /var/tmp:rw,exec,size=4G \
+            -v ${{ github.workspace }}/output:/output \
             mkosi-builder \
             bash -c "
               cd /workspace
