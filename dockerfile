@@ -2,6 +2,8 @@ FROM archlinux:latest
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+RUN pacman -Syu --noconfirm
+
 RUN pacman -Sy --noconfirm \
     mkosi \
     systemd \
@@ -9,26 +11,29 @@ RUN pacman -Sy --noconfirm \
     squashfs-tools \
     dosfstools \
     parted \
+    e2fsprogs \
     qemu-img \
-    debian-archive-keyring \
-    apt \
+    mtools \
+    gnupg \
+    git \
     diffutils \
-    cpio \
-    mtools
+    cpio
 
-COPY . /workspace
+COPY . /workspace-src
 
 WORKDIR /workspace
 
 RUN mkdir -p \
-    /workspace/.mkosi.builddir \
+    /workspace/mkosi.builddir \
+    /workspace/mkosi.cache \
+    /workspace/buildcache \
+    /workspace/ISO \
     /workspace/.mkosi-cache \
-    /workspace/.mkosi.cache \
-    /workspace/.mkosi.tools \
-    /workspace/.ISO \
+    /var/tmp/mkosi-tmp \
     /work
 
 RUN chmod 1777 /workspace /var/tmp/mkosi-tmp /work
+
 RUN chown -R root:root /workspace /var/tmp/mkosi-tmp /work
 
 CMD ["/bin/bash"]

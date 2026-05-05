@@ -5,7 +5,7 @@ on:
     workflows: [ "Verify GPG Signature" ]
     types:
       - completed
-    branches: [ "stable" ]
+    branches: [ "d3bug" ]
 
 permissions:
   contents: write
