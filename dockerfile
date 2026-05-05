@@ -14,6 +14,7 @@ RUN pacman -Sy --noconfirm \
     e2fsprogs \
     debian-archive-keyring \
     qemu-img \
+    apt \
     mtools \
     gnupg \
     git \
