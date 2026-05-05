@@ -23,12 +23,12 @@ Designed as secure cold storage wallet on a stick.
 
 | **Security Status**  |
 | -------------------- |
-| [![[Projects/eQ-OS/README/attachments/993c91d0783edcb61bfa8a0727c76aff_MD5.svg]]](https://github.com/control-owl/eQ-OS/actions/workflows/verify-gpg-signature.yml) |
-| [![[Projects/eQ-OS/README/attachments/8e233ecd5b48d95ebc594b1266842fba_MD5.svg]]](https://github.com/control-owl/eQ-OS/actions/workflows/github-code-scanning/codeql) |
+| [![Verify GPG Signature](https://github.com/control-owl/eQ-OS/actions/workflows/verify-gpg-signature.yml/badge.svg)](https://github.com/control-owl/eQ-OS/actions/workflows/verify-gpg-signature.yml) |
+| [![CodeQL](https://github.com/control-owl/eQ-OS/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/control-owl/eQ-OS/actions/workflows/github-code-scanning/codeql) |
 
-| **ISO Build Status**                                                                                                                                        |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [![[Projects/eQ-OS/README/attachments/3b7d98bda37b083c215a84b676307194_MD5.svg]]](https://github.com/control-owl/eQ-OS/actions/workflows/release-eQ-OS.yml) |
+| **ISO Build Status**     |
+| -------------------- |
+| [![Linux x86_64 GNU](https://github.com/control-owl/eQ-OS/actions/workflows/release-eQ-OS.yml/badge.svg)](https://github.com/control-owl/eQ-OS/actions/workflows/release-eQ-OS.yml) |
 
 ## mkosi Configuration
 

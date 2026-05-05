@@ -4,10 +4,12 @@ set -euo pipefail
 # ≡≡≡≡≡≡≡≡≡ Prepare qemu firmware ≡≡≡≡≡≡≡≡≡
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+QEMU_DIR="qemu"
+OUTPUT_DIR="ISO"
+IMAGE="eQ-OS.raw"
 OVMF_CODE="/usr/share/edk2/x64/OVMF_CODE.4m.fd"
 OVMF_VARS_SRC="/usr/share/edk2/x64/OVMF_VARS.4m.fd"
 OVMF_VARS_LOCAL="$QEMU_DIR/OVMF_VARS.fd"
-
 mkdir -p "$QEMU_DIR"
 cp "$OVMF_VARS_SRC" "$OVMF_VARS_LOCAL"
 
