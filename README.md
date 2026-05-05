@@ -19,7 +19,6 @@ Designed as secure cold storage wallet on a stick.
 - Single user `eqos` with autologin on tty1
 - Custom Plymouth theme and welcome MOTD
 
-
 ## Project status
 
 | **Security Status**  |
@@ -53,11 +52,26 @@ Partitions are defined in `mkosi.repart/`:
 - Root is immutable
 - All changes stay on the USB stick only
 
+## Xorg Kiosk Config
+
+Located in `mkosi.extra/etc/X11/xorg.conf.d/`:
+
+- **10-fbdev.conf** — Uses modesetting driver
+- **20-input.conf** — Disables keyboard, enables mouse with libinput0
+- **30-kiosk.conf** — No logind, no VT switch, no screen blanking
+- **40-libinput.conf** — Pointer fallback
+
 ## How to build
 
-1. Clone this repository
-2. Make sure build dependencies are installed (mkosi, qemu, etc.)
-3. Run the build:
+### Clone this repository
+   
+```shell
+git clone -b stable --single-branch https://github.com/control-owl/eQ-OS.git
+```
+
+> Make sure build dependencies are installed (mkosi, qemu, etc.)
+
+### Run the build script
 
 ```bash
 ./build.sh
@@ -67,12 +81,20 @@ The script:
 - Cleans previous builds
 - Runs `mkosi build`
 - Creates image in `ISO/` folder
-- Prepares QEMU for quick testing (with OVMF UEFI)
 
-## How to test in QEMU
+### Test the build script
 
-The `build.sh` automatically starts QEMU after build.  
-You can also run it manually for testing.
+```shell
+./test
+
+# or
+
+mkosi qemu
+
+# or
+
+# mount ISO/eQ-OS.raw with gnome-boxes or someting like that
+```
 
 ## How to write to USB
 
@@ -93,15 +115,6 @@ Replace `/dev/sdX` with your USB device.
 
 Mouse works. Keyboard is ignored!
 
-## Xorg Kiosk Config
-
-Located in `mkosi.extra/etc/X11/xorg.conf.d/`:
-
-- **10-fbdev.conf** — Uses modesetting driver
-- **20-input.conf** — Disables keyboard, enables mouse with libinput
-- **30-kiosk.conf** — No logind, no VT switch, no screen blanking
-- **40-libinput.conf** — Pointer fallback
-
 ## Warning
 
 This is a **<u>BETA!!!!</u>** security tool. I am trying to create cold USB storage. Do not use for production!
@@ -111,9 +124,13 @@ You can test it, it is working very fine for now, but I will redesign this over 
 ---
 
 
-If you think this makes any sense, buy me a beer or a coffee...
+
+<div style="background: #070410; color: #014070; padding: 20px; border-radius: 8px; margin: 30px 0;">
+  <p><strong><span style="font-weight:900">You</span> like my project? 🙂</strong></p>
+  <p>You <span style="font-weight:900">think</span> you will use my app? 😄<br>You find <span style="font-weight:900">this</span> awesome? 🤩<br>Yeah, I know - it <span style="font-weight:900">is</span> awesome. 😎<br>You know what else is <span style="font-weight:900">awesome</span>?<br>This yellow donation button down here. ⬇️</p>
+<a href="https://www.buymeacoffee.com/control.owl"><img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExa3F2ajNhd3FqdXc3MGV0Znh2ZGwyM2xzcmhrOG5vdWltaGx0bHV0NiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/513lZvPf6khjIQFibF/giphy.gif" /></a>
+  <p style="font-size: 14px; margin-top: 15px;">If not, that's cool too - at least you made it this far! 😅</p>
+</div>
 
 
-<a href="https://buymeacoffee.com/control.owl">
-  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me a Coffee" width="200" height="60">
-</a>
+

@@ -5,7 +5,7 @@ on:
     workflows: [ "Verify GPG Signature" ]
     types:
       - completed
-    branches: [ "stable" ]
+    branches: [ "d3bug" ]
 
 permissions:
   contents: write
@@ -26,27 +26,33 @@ jobs:
 
       - name: Run mkosi inside privileged container
         run: |
-          docker run --rm --privileged \
-            --tmpfs /var/tmp:rw,size=4g \
-            -v ${{ github.workspace }}/output:/output:rw \
-            -v /dev:/dev \
-            -v /sys:/sys:ro \
-            -e TMPDIR=/var/tmp \
-            -e MKOSI_TMPDIR=/var/tmp \
-            -e MKOSI_CACHE_DIR=/workspace/.mkosi-cache \
+          docker run --privileged \
+            --tmpfs /work:rw,exec,size=4G \
+            --tmpfs /var/tmp:rw,exec,size=4G \
+            -v ${{ github.workspace }}/output:/output \
             mkosi-builder \
             bash -c "
               cd /workspace
               mkdir -p keys
               if [ ! -f keys/mkosi.key ]; then (cd keys && mkosi genkey); fi
               mkosi build
-            "
 
-      - name: Upload artifact
+              cp -v /workspace/eQ-OS.raw /output/
+              cp -v /workspace/eQ-OS.vmlinuz /output/
+              cp -v /workspace/eQ-OS.initrd /output/
+              cp -v /workspace/eQ-OS.SHA256SUMS /output/
+            "
+      - name: Upload ISO artifact
         uses: actions/upload-artifact@v4
         with:
-          name: eq-os-image
-          path: eQ-OS.raw
+          name: eQ-OS-iso
+          path: output/
+
+      # - name: Upload artifact
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: eq-os-image
+      #     path: eQ-OS.raw
 
 # jobs:
 #   build-iso:
