@@ -19,7 +19,8 @@ RUN pacman -Sy --noconfirm \
     gnupg \
     git \
     diffutils \
-    cpio
+    cpio \
+    grub
 
 COPY . /workspace
 
