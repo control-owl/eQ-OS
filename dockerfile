@@ -28,7 +28,6 @@ RUN mkdir -p \
     /workspace/mkosi.cache \
     /workspace/buildcache \
     /workspace/ISO \
-    /workspace/.mkosi-cache \
     /var/tmp/mkosi-tmp \
     /work
 
