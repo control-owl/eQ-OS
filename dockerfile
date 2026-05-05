@@ -20,7 +20,8 @@ RUN pacman -Sy --noconfirm \
     git \
     diffutils \
     cpio \
-    grub
+    grub \
+    erofs-utils
 
 COPY . /workspace
 
