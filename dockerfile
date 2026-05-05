@@ -21,7 +21,8 @@ RUN pacman -Sy --noconfirm \
     diffutils \
     cpio \
     grub \
-    erofs-utils
+    erofs-utils \
+    python-pefile
 
 COPY . /workspace
 
