@@ -31,7 +31,7 @@ RUN mkdir -p \
     /var/tmp/mkosi-tmp \
     /work
 
-RUN chmod 1777 /workspace /var/tmp/mkosi-tmp /work
+RUN chmod 1777 /workspace /var/tmp /work
 
 RUN chown -R root:root /workspace /var/tmp/mkosi-tmp /work
 
