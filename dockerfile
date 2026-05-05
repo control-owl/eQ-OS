@@ -19,7 +19,7 @@ RUN pacman -Sy --noconfirm \
     diffutils \
     cpio
 
-COPY . /workspace-src
+COPY . /workspace
 
 WORKDIR /workspace
 
@@ -30,9 +30,5 @@ RUN mkdir -p \
     /workspace/ISO \
     /var/tmp/mkosi-tmp \
     /work
-
-RUN chmod 1777 /workspace /var/tmp /work
-
-RUN chown -R root:root /workspace /var/tmp/mkosi-tmp /work
 
 CMD ["/bin/bash"]
