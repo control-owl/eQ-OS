@@ -42,11 +42,11 @@ jobs:
               mkosi build
             "
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: eq-os-image
-          path: eQ-OS.raw
+      # - name: Upload artifact
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: eq-os-image
+      #     path: eQ-OS.raw
 
 # jobs:
 #   build-iso:

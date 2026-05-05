@@ -12,6 +12,7 @@ RUN pacman -Sy --noconfirm \
     dosfstools \
     parted \
     e2fsprogs \
+    debian-archive-keyring \
     qemu-img \
     mtools \
     gnupg \
