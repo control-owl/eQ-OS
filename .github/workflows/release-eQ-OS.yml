@@ -38,8 +38,8 @@ jobs:
               mkosi build
 
               cp -v /workspace/eQ-OS.raw /output/
-              cp -v /workspace/eQ-OS.vmlinuz /output/
-              cp -v /workspace/eQ-OS.initrd /output/
+              #cp -v /workspace/eQ-OS.vmlinuz /output/
+              #cp -v /workspace/eQ-OS.initrd /output/
               cp -v /workspace/eQ-OS.SHA256SUMS /output/
             "
       - name: Upload ISO artifact
@@ -47,50 +47,6 @@ jobs:
         with:
           name: eQ-OS-iso
           path: output/
-
-      # - name: Upload artifact
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: eq-os-image
-      #     path: eQ-OS.raw
-
-# jobs:
-#   build-iso:
-#     name: eQ-OS ISO x86_64
-#     runs-on: ubuntu-latest
-
-#     env:
-#       APP_NAME: "eQ-OS"
-#       IMAGE_NAME: "eQ-OS.raw"
-#       OUTPUT_DIR: "ISO"
-#       VERSION_FILE: "changelog.md"
-
-#     steps:
-#       - name: "Checkout repository"
-#         uses: actions/checkout@v4
-#         with:
-#           fetch-depth: 0
-
-#       - name: "Install system dependencies"
-#         run: |
-#           sudo apt-get update
-#           sudo apt-get install -y \
-#             git \
-#             debootstrap \
-#             ubuntu-keyring \
-#             systemd-container \
-#             qemu-utils \
-#             mtools \
-#             mkosi
-
-#       - name: "Prepare build environment"
-#         run: |
-#           chmod +x build.sh
-#           mkdir -p log keys ISO
-
-#       - name: "Run build.sh"
-#         run: |
-#           ./build.sh
 
 #       - name: "Extract version number"
 #         run: |
