@@ -32,11 +32,10 @@ jobs:
 
       - name: Run mkosi inside privileged container
         run: |
-          mkdir -p output
           docker run --privileged \
             --tmpfs /work:rw,exec,size=4G \
             --tmpfs /var/tmp:rw,exec,size=4G \
-            -v ${{ github.workspace }}/output:/output \
+            -v ${{ github.workspace }}/ISO:/workspace/ISO \
             -v ${{ github.workspace }}/mkosi.builddir:/workspace/mkosi.builddir \
             mkosi-builder \
             bash -c "
