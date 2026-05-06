@@ -13,7 +13,7 @@ permissions:
 
 env:
   APP_NAME: eQ-OS
-  VERSION_FILE: changelog.md
+  VERSION_FILE: CHANGELOG
   OUTPUT_DIR: /workspace/ISO
   ISO_FILE: eQ-OS.raw
   SHA_FILE: eQ-OS.SHA256SUMS
@@ -32,11 +32,11 @@ jobs:
 
       - name: Run mkosi inside privileged container
         run: |
-          mkdir -p ${{ env.OUTPUT_DIR }}
+          mkdir -p ${{ github.workspace }}/ISO
           docker run --privileged \
             --tmpfs /work:rw,exec,size=4G \
             --tmpfs /var/tmp:rw,exec,size=4G \
-            -v ${{ github.workspace }}/ISO:${{ env.OUTPUT_DIR }} \
+            -v ${{ github.workspace }}/ISO:/workspace/ISO \
             -v ${{ github.workspace }}/mkosi.builddir:/workspace/mkosi.builddir \
             mkosi-builder \
             bash -c "
@@ -44,6 +44,7 @@ jobs:
               if [ ! -f mkosi.key ]; then mkosi genkey; fi
               mkosi build
             "
+
 
       - name: Extract version number
         run: |
@@ -80,8 +81,8 @@ jobs:
           files: |
             ${{ env.OUTPUT_DIR }}/${{ env.ISO_FILE }}
             ${{ env.OUTPUT_DIR }}/${{ env.SHA_FILE }}
-            Changelog.md
-            LICENSE.txt
+            CHANGELOG
+            LICENSE
           draft: false
           prerelease: true
           tag_name: v${{ env.VERSION_NUMBER }}

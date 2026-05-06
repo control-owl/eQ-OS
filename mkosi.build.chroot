@@ -61,7 +61,7 @@ git clone \
 
 cd eQ
 
-VERSION_NUMBER="$(head -n 1 Changelog.md | cut -d ':' -f 2- | tr -d ' #version')"
+VERSION_NUMBER="$(head -n 1 CHANGELOG | cut -d ':' -f 2- | tr -d ' #version')"
 if [[ ! "$VERSION_NUMBER" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     echo "Error: VERSION_NUMBER is not in valid format: ${VERSION_NUMBER}"
     echo "Expected format: 1.2.3"
