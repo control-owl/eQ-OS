@@ -4,7 +4,7 @@ on:
   workflow_run:
     workflows: [ "Verify GPG Signature" ]
     types: [ completed ]
-    branches: [ "d3bug" ]
+    branches: [ "stable" ]
 
 permissions:
   contents: write
