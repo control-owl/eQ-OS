@@ -90,10 +90,6 @@ The script:
 # or
 
 mkosi qemu
-
-# or
-
-# mount ISO/eQ-OS.raw with gnome-boxes or someting like that
 ```
 
 ## How to write to USB

@@ -32,10 +32,11 @@ jobs:
 
       - name: Run mkosi inside privileged container
         run: |
+          mkdir -p ${{ env.OUTPUT_DIR }}
           docker run --privileged \
             --tmpfs /work:rw,exec,size=4G \
             --tmpfs /var/tmp:rw,exec,size=4G \
-            -v ${{ github.workspace }}/ISO:/workspace/ISO \
+            -v ${{ github.workspace }}/ISO:${{ env.OUTPUT_DIR }} \
             -v ${{ github.workspace }}/mkosi.builddir:/workspace/mkosi.builddir \
             mkosi-builder \
             bash -c "
@@ -88,5 +89,5 @@ jobs:
           body: |
             eQ-OS release build
 
-            **Image:** ${{ env.RAW_FILE }}
+            **Image:** ${{ env.ISO_FILE }}
             **Format:** RAW (bootable GPT disk image)
