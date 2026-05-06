@@ -61,7 +61,7 @@ systemctl mask systemd-user-sessions.service
 # ≡≡≡≡≡≡≡ Extract version ≡≡≡≡≡≡≡
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-eQ_OS_VERSION="$(head -n 1 CHANGELOG | cut -d ':' -f 2- | tr -d ' #version')"
+eQ_OS_VERSION="$(head -n 1 changelog.md | cut -d ':' -f 2- | tr -d ' #version')"
 
 if [ ! "$eQ_OS_VERSION" =~ ^[0-9]+\.[0-9]+$ ]; then
     echo "Error: eQ_OS_VERSION is not in valid format: ${eQ_OS_VERSION}"

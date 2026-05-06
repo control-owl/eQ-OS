@@ -45,7 +45,6 @@ jobs:
               mkosi build
             "
 
-
       - name: Extract version number
         run: |
           VERSION_NUMBER=$(head -n 1 ${{ env.VERSION_FILE }} | cut -d ':' -f 2- | tr -d ' #version')
