@@ -33,7 +33,7 @@ jobs:
       - name: Run mkosi inside privileged container
         run: |
           mkdir -p ${{ github.workspace }}/ISO
-          mkdir -p /output
+          mkdir -p ${{ github.workspace }}/mkosi.builddir
           docker run --privileged \
             --tmpfs /work:rw,exec,size=4G \
             --tmpfs /var/tmp:rw,exec,size=4G \
@@ -45,7 +45,8 @@ jobs:
               if [ ! -f mkosi.key ]; then mkosi genkey; fi
               mkosi build
 
-              cp ${{ env.OUTPUT_DIR }}/${{ env.ISO_FILE }} /output
+              cp -v mkosi.builddir/eQ-OS.raw ISO/
+              cp -v mkosi.builddir/eQ-OS.SHA256SUMS ISO/
             "
 
       - name: Extract version number
@@ -81,7 +82,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           files: |
-            /output/${{ env.ISO_FILE }}
+            ${{ env.OUTPUT_DIR }}/${{ env.ISO_FILE }}
             ${{ env.OUTPUT_DIR }}/${{ env.SHA_FILE }}
             CHANGELOG
             LICENSE
