@@ -1,8 +1,8 @@
 /ISO
 /qemu
 /log
-/buildroot
-/mkosi.builddir
-/mkosi.cache
-/mkosi.tools
-/keys
+mkosi.builddir
+
+# Files
+mkosi.key
+mkosi.crt
