@@ -61,7 +61,16 @@ Located in `mkosi.extra/etc/X11/xorg.conf.d/`:
 - **30-kiosk.conf** — No logind, no VT switch, no screen blanking
 - **40-libinput.conf** — Pointer fallback
 
-## How to build
+## How to use
+
+1. Download the latest eQ-OS.raw file: [![GitHub release](https://img.shields.io/github/v/release/control-owl/eQ-OS)](https://github.com/control-owl/eQ-OS/releases)
+2. Burn raw file to USB stick
+3. Boot from USB stick
+
+> I tested burning raw file with dd and gnome-disk-utility
+
+
+## How to build manually
 
 ### Clone this repository
    

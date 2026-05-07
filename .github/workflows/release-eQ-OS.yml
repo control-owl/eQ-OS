@@ -14,7 +14,6 @@ permissions:
 env:
   APP_NAME: eQ-OS
   VERSION_FILE: CHANGELOG
-  OUTPUT_DIR: /workspace/ISO
   ISO_FILE: eQ-OS.raw
   SHA_FILE: eQ-OS.SHA256SUMS
 
