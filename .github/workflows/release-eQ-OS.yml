@@ -40,7 +40,7 @@ jobs:
             -v ${{ github.workspace }}/ISO:/workspace/ISO \
             -v ${{ github.workspace }}/mkosi.builddir:/workspace/mkosi.builddir \
             mkosi-builder \
-            bash -c "
+            bash -c '
               cd /workspace
               if [ ! -f mkosi.key ]; then mkosi genkey; fi
               mkosi build
@@ -89,7 +89,7 @@ jobs:
               echo "DEBUG: LIST /workspace/ISO AFTER COPY"
               ls -al /workspace/ISO || true
 
-            "
+            '
 
       - name: Extract version number
         run: |
