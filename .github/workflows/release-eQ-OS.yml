@@ -45,8 +45,8 @@ jobs:
               if [ ! -f mkosi.key ]; then mkosi genkey; fi
               mkosi build
 
-              cp -v ${{ github.workspace }}/ISO/eQ-OS.raw ISO/
-              cp -v ${{ github.workspace }}/ISO/eQ-OS.SHA256SUMS ISO/
+              cp -v ${{ github.workspace }}eQ-OS.raw ISO/
+              cp -v ${{ github.workspace }}eQ-OS.SHA256SUMS ISO/
             "
 
       - name: Extract version number
