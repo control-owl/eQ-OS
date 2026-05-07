@@ -45,8 +45,50 @@ jobs:
               if [ ! -f mkosi.key ]; then mkosi genkey; fi
               mkosi build
 
-              cp -v ${{ github.workspace }}eQ-OS.raw ISO/
-              cp -v ${{ github.workspace }}eQ-OS.SHA256SUMS ISO/
+              echo "DEBUG: LIST ROOT"
+              ls -al /
+
+              echo "DEBUG: LIST /workspace"
+              ls -al /workspace
+
+              echo "DEBUG: LIST /workspace/mkosi.builddir"
+              ls -al /workspace/mkosi.builddir || true
+
+              echo "DEBUG: LIST /workspace/mkosi.builddir/output"
+              ls -al /workspace/mkosi.builddir/output || true
+
+              echo "DEBUG: LIST /workspace/mkosi.builddir/staging"
+              ls -al /workspace/mkosi.builddir/staging || true
+
+              echo "DEBUG: LIST /var/tmp"
+              ls -al /var/tmp || true
+
+              echo "DEBUG: LIST /var/tmp/mkosi-workspace*"
+              ls -al /var/tmp/mkosi-workspace* 2>/dev/null || true
+
+              echo "DEBUG: LIST /workspace/ISO BEFORE COPY"
+              ls -al /workspace/ISO || true
+
+
+              echo "DEBUG: TRY COPY FROM mkosi.builddir ROOT"
+              cp -v /workspace/mkosi.builddir/eQ-OS.raw /workspace/ISO/ 2>/dev/null || echo "not here"
+              cp -v /workspace/mkosi.builddir/eQ-OS.SHA256SUMS /workspace/ISO/ 2>/dev/null || echo "not here"
+
+              echo "DEBUG: TRY COPY FROM mkosi.builddir/output"
+              cp -v /workspace/mkosi.builddir/output/eQ-OS.raw /workspace/ISO/ 2>/dev/null || echo "not here"
+              cp -v /workspace/mkosi.builddir/output/eQ-OS.SHA256SUMS /workspace/ISO/ 2>/dev/null || echo "not here"
+
+              echo "DEBUG: TRY COPY FROM mkosi.builddir/staging"
+              cp -v /workspace/mkosi.builddir/staging/eQ-OS.raw /workspace/ISO/ 2>/dev/null || echo "not here"
+              cp -v /workspace/mkosi.builddir/staging/eQ-OS.SHA256SUMS /workspace/ISO/ 2>/dev/null || echo "not here"
+
+              echo "DEBUG: TRY COPY FROM /var/tmp/mkosi-workspace*/staging"
+              cp -v /var/tmp/mkosi-workspace*/staging/eQ-OS.raw /workspace/ISO/ 2>/dev/null || echo "not here"
+              cp -v /var/tmp/mkosi-workspace*/staging/eQ-OS.SHA256SUMS /workspace/ISO/ 2>/dev/null || echo "not here"
+
+              echo "DEBUG: LIST /workspace/ISO AFTER COPY"
+              ls -al /workspace/ISO || true
+
             "
 
       - name: Extract version number
