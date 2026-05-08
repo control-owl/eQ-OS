@@ -22,28 +22,25 @@ echo "Log file: $LOG_FILE"
 
 export PATH="$PATH:/usr/bin:/sbin:/usr/sbin"
 
-IMAGE="eQ-OS.raw"
 OUTPUT_DIR="ISO"
-KEYS_DIR="keys"
-QEMU_DIR="qemu"
+IMAGE="eQ-OS.raw"
+# KEYS_DIR="keys"
+# QEMU_DIR="qemu"
 
 
 # ≡≡≡≡≡≡≡≡≡ Prepare build directories ≡≡≡≡≡≡≡≡≡
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-mkosi clean || true
+mkosi clean -f || true
 rm -rf "$OUTPUT_DIR"
 mkdir -p "$OUTPUT_DIR"
-mkdir -p "$KEYS_DIR"
+# mkdir -p "$KEYS_DIR"
 
 
 # ≡≡≡≡≡≡≡≡≡ Prepare keys ≡≡≡≡≡≡≡≡≡
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-if [ ! -f "keys/mkosi.crt" ] || [ ! -f "keys/mkosi.key" ]; then
-    (
-        cd "$KEYS_DIR"
-        mkosi genkey
-    )
+if [ ! -f "mkosi.key" ]; then
+    mkosi genkey
 fi
 
 
