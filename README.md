@@ -67,7 +67,7 @@ Located in `mkosi.extra/etc/X11/xorg.conf.d/`:
 2. Burn raw file to USB stick
 3. Boot from USB stick
 
-> I tested burning raw file with dd and gnome-disk-utility
+> I tested burning raw file with dd and gnome-disk-utility on Linux, and with Rufus on Windows
 
 
 ## How to build manually
