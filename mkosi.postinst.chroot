@@ -25,7 +25,7 @@ cat > /home/eqos/.profile << 'EOF'
 #!/bin/sh
 if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
     startx > /dev/null 2>&1
-    exit
+    # exit
 fi
 EOF
 
@@ -52,13 +52,25 @@ usermod -aG video,input,render,tty eqos
 echo "Configuring service..."
 
 echo "Setting eQ-OS Plymouth theme..."
-plymouth-set-default-theme eqos || true
+plymouth-set-default-theme eqos
+
 
 echo "Regenerating initramfs with dracut..."
+mkdir -p /var/tmp
+chmod 1777 /var/tmp
+export TMPDIR=/tmp
+
 KERNEL_VER=$(ls /lib/modules/ | head -n1)
 echo "Using kernel: $KERNEL_VER"
 
-dracut -f --kver "$KERNEL_VER" || dracut -f || true
+dracut -fv --kver "$KERNEL_VER"
+
+
+# echo "Regenerating initramfs with dracut..."
+# KERNEL_VER=$(ls /lib/modules/ | head -n1)
+# echo "Using kernel: $KERNEL_VER"
+
+# dracut -f --kver "$KERNEL_VER"
 
 systemctl enable plymouth.service
 
