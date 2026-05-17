@@ -53,25 +53,6 @@ echo "Configuring service..."
 
 echo "Setting eQ-OS Plymouth theme..."
 plymouth-set-default-theme eqos
-
-
-echo "Regenerating initramfs with dracut..."
-mkdir -p /var/tmp
-chmod 1777 /var/tmp
-export TMPDIR=/tmp
-
-KERNEL_VER=$(ls /lib/modules/ | head -n1)
-echo "Using kernel: $KERNEL_VER"
-
-dracut -fv --kver "$KERNEL_VER"
-
-
-# echo "Regenerating initramfs with dracut..."
-# KERNEL_VER=$(ls /lib/modules/ | head -n1)
-# echo "Using kernel: $KERNEL_VER"
-
-# dracut -f --kver "$KERNEL_VER"
-
 systemctl enable plymouth.service
 
 systemctl mask systemd-logind.service

@@ -29,7 +29,7 @@ IMAGE="eQ-OS.raw"
 # ≡≡≡≡≡≡≡≡≡ Prepare build directories ≡≡≡≡≡≡≡≡≡
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-mkosi clean -f || true
+mkosi clean
 rm -rf "$OUTPUT_DIR"
 mkdir -p "$OUTPUT_DIR"
 
