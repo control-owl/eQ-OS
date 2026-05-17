@@ -68,8 +68,8 @@ if [[ ! "$VERSION_NUMBER" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     exit 1
 fi
 
-mkdir -p "$DESTDIR/usr/local/eqos"
-echo "$VERSION_NUMBER" | tee -a "$DESTDIR/usr/local/eqos/version"
+mkdir -p "$DESTDIR/etc/eQ"
+echo "$VERSION_NUMBER" | tee -a "$DESTDIR/etc/eQ/eQ.version"
 
 export CARGO_TARGET_DIR="$BUILDDIR/target"
 cargo build --release --features=osk

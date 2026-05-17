@@ -25,7 +25,7 @@ cat > /home/eqos/.profile << 'EOF'
 #!/bin/sh
 if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
     startx > /dev/null 2>&1
-    # exit
+    exit
 fi
 EOF
 
@@ -80,14 +80,13 @@ if [ ! "$eQ_OS_VERSION" =~ ^[0-9]+\.[0-9]+$ ]; then
     exit 1
 fi
 
-echo "$eQ_OS_VERSION" | tee -a /home/eqos/eQ-OS.version
+echo "$eQ_OS_VERSION" | tee -a /etc/eQ/eQ-OS.version
 
 BUILD_DATE="$(date +"%Y-%m-%dT%H:%M:%S")"
-echo "$BUILD_DATE" | tee -a /home/eqos/BUILD
+echo "$BUILD_DATE" | tee -a /etc/eQ/eQ-OS.build
 
 
-eQ_VERSION_FILE="/usr/local/eqos/version"
-eQ_VERSION="unknown"
+eQ_VERSION_FILE="/etc/eQ/eQ.version"
 [ -f "$eQ_VERSION_FILE" ] && eQ_VERSION="$(cat "$eQ_VERSION_FILE")"
 
 MOTD="$(cat <<EOF
