@@ -18,6 +18,7 @@ Designed as secure cold storage wallet on a stick.
 - Built with mkosi on Linux host
 - Single user `eqos` with autologin on tty1
 - Custom Plymouth theme and welcome MOTD
+- Encrypted wallet storage partition
 
 ## Project status
 
@@ -50,6 +51,7 @@ Partitions are defined in `mkosi.repart/`:
 - Xorg runs without systemd-logind
 - No unnecessary services
 - Root is immutable
+- Wallet storage encrypted with LUKS
 - All changes stay on the USB stick only
 
 ## Xorg Kiosk Config
@@ -67,7 +69,7 @@ Located in `mkosi.extra/etc/X11/xorg.conf.d/`:
 2. Burn raw file to USB stick
 3. Boot from USB stick
 
-> I tested burning raw file with dd and gnome-disk-utility on Linux, and with Rufus on Windows
+> I tested burning raw file with dd and gnome-disk-utility on Linux, and with Rufus on Windows.
 
 
 ## How to build manually
@@ -115,8 +117,8 @@ Replace `/dev/sdX` with your USB device.
 
 1. Insert the USB stick
 2. Boot from it (set BIOS/UEFI to boot from USB)
-3. Wait
-4. **eQ** wallet starts automatically in fullscreen
+3. Set your master password
+4. Use eQ app
 
 Mouse works. Keyboard is ignored!
 
