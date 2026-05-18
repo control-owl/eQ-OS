@@ -15,7 +15,7 @@ WIDTH=70
 
 export NEWT_COLORS='
 root=,black
-window=cyan,#070410
+window=cyan,black
 border=cyan,black
 textbox=white,black
 button=black,cyan
