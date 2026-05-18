@@ -1,4 +1,7 @@
-# version 0.7.0
+# version 0.8
+- encrypted storage initialization
+
+# version 0.7
 - build eQ with --feature="mkosi"
 - on-screen keyboard
 

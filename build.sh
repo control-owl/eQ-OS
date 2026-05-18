@@ -24,17 +24,14 @@ export PATH="$PATH:/usr/bin:/sbin:/usr/sbin"
 
 OUTPUT_DIR="ISO"
 IMAGE="eQ-OS.raw"
-# KEYS_DIR="keys"
-# QEMU_DIR="qemu"
 
 
 # ≡≡≡≡≡≡≡≡≡ Prepare build directories ≡≡≡≡≡≡≡≡≡
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-mkosi clean -f || true
+mkosi clean
 rm -rf "$OUTPUT_DIR"
 mkdir -p "$OUTPUT_DIR"
-# mkdir -p "$KEYS_DIR"
 
 
 # ≡≡≡≡≡≡≡≡≡ Prepare keys ≡≡≡≡≡≡≡≡≡
@@ -48,7 +45,7 @@ fi
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 echo "Running mkosi build..."
 
-mkosi build
+mkosi build -f
 
 if [ ! -f "$OUTPUT_DIR/$IMAGE" ]; then
     echo "ERROR: Image not created!"
