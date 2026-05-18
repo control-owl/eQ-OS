@@ -1,145 +1,175 @@
 #!/usr/bin/env bash
-set -euo pipefail
 
-TTY="/dev/tty1"
-MAPPER_NAME="eQ"
+set -Eeuo pipefail
+IFS=$'\n\t'
+umask 077
+
+readonly TTY="/dev/tty1"
+readonly MAPPER_NAME="eQ"
+
+VERSION="$(< /etc/eQ/eQ-OS.version)"
+readonly TITLE="eQ-OS v${VERSION}"
+
+HEIGHT=14
+WIDTH=70
+
+export NEWT_COLORS='
+root=,black
+window=cyan,#070410
+border=cyan,black
+textbox=white,black
+button=black,cyan
+actbutton=black,white
+title=white,black
+roottext=white,black
+entry=white,black
+compactbutton=white,black
+checkbox=white,black
+'
+
+cleanup() {
+    unset PASS1 PASS2 VERSION DEVICE
+    clear
+}
+
+trap cleanup EXIT HUP INT TERM
 
 exec <"$TTY" >"$TTY" 2>&1
 
-echo
-echo "-------------------------------"
-echo " eQ-OS partition initialization"
-echo "-------------------------------"
-echo
+clear
 
-# Find partition by PARTLABEL or filesystem LABEL
-DEVICE=""
+msgbox() {
+    whiptail \
+        --title "$TITLE" \
+        --msgbox \
+        "$1" \
+        "$HEIGHT" "$WIDTH"
+}
+
+infobox() {
+    whiptail \
+        --title "$TITLE" \
+        --infobox \
+        "$1" \
+        "$HEIGHT" "$WIDTH"
+}
+
+yesno() {
+    whiptail \
+        --title "$TITLE" \
+        --yesno \
+        "$1" \
+        "$HEIGHT" "$WIDTH"
+}
+
+passwordbox() {
+    whiptail \
+        --title "$TITLE" \
+        --passwordbox \
+        "$1" \
+        "$HEIGHT" "$WIDTH" \
+        3>&1 1>&2 2>&3
+}
 
 DEVICE="$(blkid -t PARTLABEL=eQ -o device 2>/dev/null | head -n1 || true)"
-
 if [[ -z "$DEVICE" ]]; then
     DEVICE="$(blkid -t LABEL=eQ -o device 2>/dev/null | head -n1 || true)"
 fi
 
 if [[ -z "$DEVICE" ]]; then
-    echo "No partition labeled 'eQ' found."
-    echo "Continuing normal login..."
-    sleep 2
-    exit 0
+    msgbox "FATAL ERROR: No 'eQ' partition found.\nExit"
+    exit 1
 fi
 
-echo "Found eQ partition:"
-echo "  $DEVICE"
-echo
-
-# Check whether already LUKS
 if cryptsetup isLuks "$DEVICE"; then
-    echo "Partition already encrypted."
-
-    if ! cryptsetup status "$MAPPER_NAME" >/dev/null 2>&1; then
-        echo
-        echo "Unlock required."
-        echo
-
-        while true; do
-            if cryptsetup open "$DEVICE" "$MAPPER_NAME"; then
-                echo
-                echo "Unlocked successfully."
-                break
-            fi
-
-            echo
-            echo "Incorrect password. Try again."
-            echo
-        done
+    if cryptsetup status "$MAPPER_NAME" >/dev/null 2>&1; then
+        exit 0
     fi
 
-    sleep 1
-    exit 0
+    while true; do
+        PASS1="$(passwordbox \
+            "\nEnter your master password to unlock the system:")"
+
+        [[ -z "${PASS1:-}" ]] && continue
+
+        if printf '%s' "$PASS1" | cryptsetup open \
+            --type luks2 \
+            --key-file=- \
+            --tries=1 \
+            "$DEVICE" \
+            "$MAPPER_NAME"; then
+
+            unset PASS1
+
+            exit 0
+        fi
+
+        unset PASS1
+
+        msgbox "Incorrect password.\n\nExit"
+        exit 99
+    done
 fi
 
-# RAW partition detected
-echo "WARNING:"
-echo "The partition is NOT encrypted."
-echo
-echo "ALL DATA ON $DEVICE WILL BE DESTROYED."
-echo
+if ! yesno "INITIAL SETUP \n\n\
+Welcome!\n\n\
+Initializing secure wallet storage\n\n\
+Continue with process?"; then
+
+    msgbox "Encryption setup cancelled.\nExit"
+    exit 2
+fi
 
 while true; do
-    read -rp "Encrypt partition now? (YES/no): " ANSWER
+    PASS1="$(passwordbox \
+"MASTER PASSWORD\n\n\
+Please create a secure password for protecting your system.\n\
+It will be required next time when you start it again.\n\n\
+This password protects everything you have.\n\
+Please keep it secure; there is no recovery.")"
 
-    case "$ANSWER" in
-        YES|yes|y|Y|"")
-            break
-            ;;
-        no|NO|n|N)
-            echo "Skipping encryption."
-            sleep 2
-            exit 0
-            ;;
-        *)
-            echo "Please answer YES or no."
-            ;;
-    esac
-done
-
-echo
-echo "Enter new LUKS password."
-echo
-
-while true; do
-    read -rsp "Password: " PASS1
-    echo
-
-    read -rsp "Confirm Password: " PASS2
-    echo
-
-    if [[ -z "$PASS1" ]]; then
-        echo "Password cannot be empty."
+    [[ -z "${PASS1:-}" ]] && {
+        msgbox "Password cannot be empty."
         continue
-    fi
+    }
+
+    PASS2="$(passwordbox "Confirm Master Password:")"
 
     if [[ "$PASS1" != "$PASS2" ]]; then
-        echo "Passwords do not match."
+        unset PASS1 PASS2
+        msgbox "Passwords do not match.\n\nPlease try again."
         continue
     fi
 
+    unset PASS2
     break
 done
 
-echo
-echo "Creating LUKS2 container..."
-echo
+infobox "Creating encrypted wallet storage...\n\n\
+This may take a few seconds."
 
-TMPKEY="$(mktemp)"
-trap 'rm -f "$TMPKEY"' EXIT
-
-printf "%s" "$PASS1" > "$TMPKEY"
-
-unset PASS1
-unset PASS2
-
-cryptsetup luksFormat \
+if ! printf '%s' "$PASS1" | cryptsetup luksFormat \
     --type luks2 \
     --batch-mode \
+    --key-file=- \
+    "$DEVICE"; then
+
+    unset PASS1
+    msgbox "ERROR: Failed to initialize encrypted storage. Exit"
+    exit 3
+fi
+
+if ! printf '%s' "$PASS1" | cryptsetup open \
+    --type luks2 \
+    --key-file=- \
     "$DEVICE" \
-    "$TMPKEY"
+    "$MAPPER_NAME"; then
 
-echo
-echo "Opening encrypted container..."
-echo
+    unset PASS1
+    msgbox "ERROR: Failed to unlock encrypted storage. Exit"
+    exit 4
+fi
 
-cryptsetup open \
-    "$DEVICE" \
-    "$MAPPER_NAME" \
-    --key-file "$TMPKEY"
+unset PASS1
 
-echo
-echo "LUKS encryption completed successfully."
-echo
-echo "Mapped device:"
-echo "  /dev/mapper/$MAPPER_NAME"
-echo
-
-sleep 2
 exit 0
