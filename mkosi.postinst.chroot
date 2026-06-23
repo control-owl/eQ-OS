@@ -5,8 +5,6 @@ set -euo pipefail -x
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 echo "Starting mkosi.postinst.chroot..."
 
-mkdir /eQ
-
 # ≡≡≡≡≡≡≡ Setup user profile ≡≡≡≡≡≡≡
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 echo "Setting up user profile..."
